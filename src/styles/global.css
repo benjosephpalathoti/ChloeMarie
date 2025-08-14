@@ -1,0 +1,407 @@
+html, body, #app {
+  width: 100vw;
+  min-height: 100vh;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  position: static !important;
+  overflow-x: hidden;
+}
+
+
+/* ─── Global Tokens & Resets ─────────────────────────────────── */
+
+
+:root {
+  --primary-font: "Neue Montreal", sans-serif;
+  --secondary-font: "Bulevar", serif;
+  --white: #ffffff;
+  --black: #000000;
+  --gray: #777777;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--primary-font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--black);
+  background: var(--white);
+  overflow-x: hidden;
+}
+
+/* ─── Landing (Index) Page ──────────────────────────────────── */
+.index {
+  min-height: 100vh;   /* Allow scrolling! */
+  padding-top: 0;
+  /* overflow: hidden;  <-- removed */
+  background: var(--white);
+  color: var(--black);
+  position: relative;
+}
+
+.index .hero {
+  position: absolute;
+  top: 122px;
+  bottom: 10px;
+  right: -10px;
+  left: calc(100% - 472px - 30px);
+  width: 472px;
+  height: 590px;
+  object-fit: cover;
+  object-position: center center;
+  z-index: 100;
+  transform-origin: 0 0;
+}
+
+.index .left {
+  position: relative;
+  padding: 1
+  
+  rem;
+}
+
+.index .logo {
+  font-size: 10rem;
+  line-height: 0.85;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  margin: 0;
+}
+
+/* ------- Only for footer-block INSIDE landing page layout ------- */
+.footer-block-initial {
+  position: absolute;
+  left: -10px;
+  bottom: 117px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  z-index: 2;
+}
+.footer-block-initial img {
+  width: 13.5rem;
+  height: 14.5rem;
+  object-fit: cover;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  overflow: clip;
+}
+.footer-block-initial .copyright {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--black);
+  gap: 30px;
+  left: 30px;
+}
+@media (max-width: 900px) {
+  .footer-block-initial {
+    position: static;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin: 1rem 0;
+  }
+}
+
+/* ─── Utility & Overrides ──────────────────────────────────── */
+/* Hide scrollbar in WebKit (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Hide scrollbar in Firefox */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* --- Layout: Center the left logo vertically --- */
+.index .left {
+  position: absolute;
+  top: 80%;
+  left: 20px;
+  transform: translateY(-50%);
+  padding: 0;
+  z-index: 10;
+}
+
+/* --- Responsive hero image size --- */
+.index .hero {
+  max-width: 90vw;
+  right: -20px;
+  min-width: 260px;
+  width: 472px;
+  height: 590px;
+  /* On smaller screens: */
+}
+@media (max-width: 900px) {
+  .index .hero {
+    left: 30vw;
+    right: -10px;
+    width: 60vw;
+    height: 36vw;
+    min-width: 180px;
+    max-width: 400px;
+  }
+  .index .logo {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .index .hero {
+    position: static;
+    width: 100vw;
+    max-width: 100vw;
+    height: auto;
+    left: unset;
+    top: unset;
+    margin-top: 80px;
+  }
+  .index .left {
+    position: static;
+    transform: none;
+    margin-top: 1.5rem;
+    text-align: left;
+  }
+}
+
+/* --- Responsive header grid --- */
+@media (max-width: 1024px) {
+  header .header-infos {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  header .header-infos p:first-child {
+    grid-column: 1 / span 3;
+  }
+  header .header-infos p:last-child {
+    grid-column: 4 / span 3;
+    width: auto;
+  }
+}
+
+/* ─── Header Bar (Landing) ──────────────────────────────────── */
+header {
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 80px;
+  background: var(--white);
+  z-index: 10;
+  padding: 0;
+  box-shadow: none;
+  border: none;
+  box-sizing: border-box;
+}
+
+/* Centered flex grid for header content */
+.header-grid {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+
+/* Fixed width, 12-column grid for captions */
+.header-infos {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  width: 1476px;    /* Fixed width like the original */
+  height: 30px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 30px;
+  z-index: 10;
+  pointer-events: none; /* prevent accidental blocking of menu clicks */
+}
+
+.captions-row{
+  grid-column:7 /13;
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Centered photographer caption */
+.photographer-caption {
+  grid-column: 3 / 6;   /* Center-ish columns, tweak as needed */
+  font-family: var(--primary-font);
+  font-size: 14px;
+  font-weight: 300;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 17.5px;
+  opacity: 0.85;
+  white-space: pre-line;
+  align-self: center;
+  text-align: center;
+  pointer-events: auto;
+}
+
+/* Just right of photographer caption */
+.last-update-caption {
+  grid-column: 6 / 8;   /* Just to the right, tweak as needed */
+  font-size: 14px;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  font-family: var(--primary-font);
+  line-height: 17.5px;
+  opacity: 0.85;
+  align-self: center;
+  text-align: left;
+  pointer-events: auto;
+}
+
+/* Fixed menu at top right */
+.menu {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  display: flex;
+  gap: 0.3rem;
+  list-style: none;
+  font-size: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  display: inline;
+}
+
+.menu a {
+  color: #aaa;
+  text-decoration: none;
+  transition: color 0.25s;
+}
+.menu a.active {
+  color: var(--black);
+}
+.menu li:not(:last-child)::after {
+  content: ",";
+  color: #aaa;
+  margin-left: 0.2em;
+}
+
+.header-infos {
+  top: 30px;
+  height: 35px;
+}
+
+.logo {
+  position: relative;
+  z-index: 101;
+  font-family: 'Oswald', Arial, sans-serif;
+  font-weight: 900;          /* Extra bold for Oswald */
+  font-size: 45vw;           /* Massive, responsive to screen */
+  line-height: 0.55;         /* Tight line spacing */
+  letter-spacing: -0.02em;   /* Letters closer together */
+  margin: 0;
+  margin-top: 0;
+  padding: 0;
+  text-transform: uppercase;
+  /* Optionally add these for a crisper look: */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.index .left {
+  position: absolute;    /* Or relative/flex, but absolute is easier for overlap */
+  top: 156px;                /* No extra margin! */
+  left: 23px;
+  z-index: 100;
+  /* z-index: 1;  (Optional, but header should have a higher z-index) */
+}
+/* === Layout container for centering content like React Bits === */
+
+.container {
+  max-width: 1440px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0px;   /* Or 16px for tighter look */
+  padding-right: 0px;
+  box-sizing: border-box;
+}
+@media (max-width: 950px) {
+  .container {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+
+/* Index hero big logo look, but not visible — only used for measuring start pos/size */
+.hero-logo-proxy{
+  position: absolute;
+  left: -33px;                 /* your current hero logo left */
+  top: 25px;                 /* your current hero logo top */
+  font-family: 'Oswald', Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: .88;
+  letter-spacing: -0.02em;
+  font-size: 11vw;            /* the huge size you had */
+  visibility: hidden;         /* <- keep it invisible */
+  pointer-events: none;
+}
+
+[data-reveal="wipe"] { will-change: clip-path; }
+
+/* About page header on dark photo */
+body.header-on-photo .global-header .header-logo {
+  color: #fff !important;
+}
+
+body.header-on-photo .global-header .photographer-caption,
+body.header-on-photo .global-header .last-update-caption {
+  color: #fff !important;
+  text-shadow: none !important;
+}
+
+body.header-on-photo .global-header .menu a:link,
+body.header-on-photo .global-header .menu a:visited {
+  color: rgba(255,255,255,.78) !important;
+  text-shadow: none !important;
+}
+
+body.header-on-photo .global-header .menu a.active {
+  color: #fff !important;
+  text-decoration: underline;
+}
+
+body.header-on-photo .global-header .menu li:not(:last-child)::after {
+  color: rgba(255,255,255,.55) !important;
+}
+
+/* header theming when on the gallery page */
+.is-gallery .site-header .logo,
+.is-gallery .site-header .caption {
+  color: #fff !important;
+}
+
+/* if your header links need to lighten too */
+.is-gallery .site-header a {
+  color: #eaeaea !important;
+  opacity: 0.9;
+}
