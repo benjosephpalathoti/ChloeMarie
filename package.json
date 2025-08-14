@@ -9,11 +9,15 @@
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",
     "gsap": "^3.13.0",
-    "vue": "^3.5.18",
+    "vue": "^3",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.4",
-    "vite": "^5.4.19"
+    "@vitejs/plugin-vue": "^5",
+    "vite": "^5"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
+
