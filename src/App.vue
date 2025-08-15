@@ -26,8 +26,7 @@
       <button class="mobile-menu-toggle" @click="toggleMobileMenu" aria-label="Toggle menu">
         <span class="menu-text">MENU</span>
         <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="M7 13l3 3 7-7" v-if="!mobileMenuOpen"></path>
-          <path d="M18 6L6 18M6 6l12 12" v-if="mobileMenuOpen"></path>
+          <path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.5"></path>
         </svg>
       </button>
     </header>
@@ -140,6 +139,9 @@ export default {
   will-change: transform;
   opacity: 1;
   pointer-events: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Header infos grid (unchanged from your version, trimmed) */
@@ -355,40 +357,57 @@ export default {
   text-align: center;
 }
 
-
-/* Add this to your App.vue .header-logo styles */
-/* Replace your .header-logo styles in App.vue with this: */
-/* Replace your .header-logo styles in App.vue with this: */
-.header-logo{
-  /* ... your existing styles ... */
-  
-  /* ONLY add these 3 lines for crispness: */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
 /* Responsive Media Queries */
 @media (max-width: 1200px){
   .header-infos{ width: 100vw; left: 0; transform: none; padding: 0 16px; }
 }
 
+/* ===== MOBILE CHANGES START HERE ===== */
 @media (max-width: 768px) {
   /* Hide desktop menu, show mobile button */
   .desktop-menu { display: none; }
   .mobile-menu-toggle { display: flex; }
   
-  /* Adjust header logo for mobile */
+  /* Mobile header styling to match target design */
+  .global-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    height: 60px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Adjust header logo for mobile - matching target design */
   .header-logo {
-    font-size: 28px;
+    font-size: 22px;
     left: 16px;
-    top: 20px;
-    line-height: 0.9;
+    top: 18px;
+    line-height: 0.85;
+    font-weight: 900;
+    letter-spacing: -0.03em;
   }
   
   /* Hide header infos on mobile */
   .header-infos {
     display: none;
+  }
+  
+  /* Mobile menu button styling to match target */
+  .mobile-menu-toggle {
+    right: 16px;
+    top: 18px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    gap: 6px;
+  }
+  
+  .menu-text {
+    font-size: 13px;
+  }
+  
+  .menu-icon {
+    width: 18px;
+    height: 18px;
   }
   
   /* Mobile menu adjustments */
@@ -403,14 +422,20 @@ export default {
 
 @media (max-width: 480px) {
   .header-logo {
-    font-size: 24px;
+    font-size: 20px;
     left: 12px;
-    top: 18px;
+    top: 17px;
   }
   
   .mobile-menu-toggle {
     right: 12px;
-    top: 18px;
+    top: 17px;
+    font-size: 12px;
+  }
+  
+  .menu-icon {
+    width: 16px;
+    height: 16px;
   }
   
   .mobile-menu-list li a {
@@ -424,7 +449,6 @@ export default {
 }
 
 @media (max-width: 700px){
-  .desktop-menu{ top: 18px; right: 10px; font-size: 15px; }
-  .header-infos{ top: 16px; }
+  /* Remove - not needed for new mobile design */
 }
 </style>

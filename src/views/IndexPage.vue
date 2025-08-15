@@ -192,25 +192,6 @@ export default {
   pointer-events: none;
 }
 
-/* Mobile responsive proxy positioning to match original layout */
-@media (max-width: 768px) {
-  .hero-logo-proxy {
-    left: -20px;
-    top: 100px; /* Start below the mobile header like original */
-    font-size: 18vw; /* Match original mobile size */
-    line-height: 0.8;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-logo-proxy {
-    left: -16px;
-    top: 90px;
-    font-size: 20vw; /* Slightly larger on small mobile */
-    line-height: 0.75;
-  }
-}
-
 /* Circular gallery section spacing */
 .circular-gallery-section{
   padding: 72px 0 96px;
@@ -226,24 +207,35 @@ export default {
   position: relative; 
 }
 
-/* ─── Mobile Responsive Styles ────────────────────────────────── */
+/* ===== MOBILE CHANGES START HERE ===== */
 
-/* Mobile adjustments for hero section */
+/* Mobile responsive proxy positioning to match target design */
 @media (max-width: 768px) {
-  .index {
-    min-height: auto !important;
-    padding-bottom: 2rem;
+  .hero-logo-proxy {
+    left: 16px;
+    top: 80px; /* Position below mobile header */
+    font-size: 19vw; /* Larger mobile size to match target */
+    line-height: 0.82;
+    font-weight: 900;
+    letter-spacing: -0.04em;
   }
   
-  /* Match original mobile layout - hero image positioned after large logo space */
+  /* Mobile adjustments for hero section */
+  .index {
+    min-height: auto !important;
+    padding-bottom: 0;
+    background: #fff;
+  }
+  
+  /* Hero image positioned to match target design */
   .index .hero {
-    position: static; /* Change from absolute to static for mobile */
-    margin-top: 280px; /* Space for the large logo animation */
+    position: relative;
+    margin-top: 60px; /* Account for fixed header */
     width: 100vw;
     max-width: 100vw;
-    height: auto;
-    min-height: 50vh;
+    height: 70vh; /* Taller hero on mobile */
     object-fit: cover;
+    object-position: center;
     left: 0;
     right: 0;
   }
@@ -256,12 +248,47 @@ export default {
   .featured-section {
     padding: 2rem 16px;
   }
+  
+  /* Container adjustments */
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  /* Footer block mobile positioning */
+  .footer-block-initial {
+    margin: 2rem 16px;
+    position: static;
+  }
+  
+  /* Touch-friendly circular gallery */
+  .circular-gallery-section {
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent horizontal overflow */
+  .index {
+    overflow-x: hidden;
+  }
+  
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 @media (max-width: 480px) {
+  .hero-logo-proxy {
+    left: 12px;
+    top: 70px;
+    font-size: 21vw; /* Slightly larger on smallest screens */
+    line-height: 0.8;
+  }
+  
   .index .hero {
-    margin-top: 260px; /* Adjusted for small mobile logo size */
-    min-height: 45vh;
+    margin-top: 60px;
+    height: 65vh;
   }
   
   .circular-gallery-section {
@@ -271,35 +298,9 @@ export default {
   .featured-section {
     padding: 1.5rem 12px;
   }
-}
-
-/* Ensure proper spacing on mobile */
-@media (max-width: 768px) {
-  .container {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
-
-/* Footer block mobile positioning */
-@media (max-width: 768px) {
-  .footer-block-initial {
-    margin: 2rem 16px;
-    position: static; /* Ensure it flows normally on mobile */
-  }
-}
-
-@media (max-width: 480px) {
+  
   .footer-block-initial {
     margin: 1.5rem 12px;
-  }
-}
-
-/* Touch-friendly circular gallery on mobile */
-@media (max-width: 768px) {
-  .circular-gallery-section {
-    touch-action: pan-x;
-    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -307,18 +308,6 @@ export default {
 @media (max-width: 1440px) {
   .container {
     max-width: 100%;
-  }
-}
-
-/* Prevent horizontal overflow on mobile */
-@media (max-width: 768px) {
-  .index {
-    overflow-x: hidden;
-  }
-  
-  * {
-    max-width: 100%;
-    box-sizing: border-box;
   }
 }
 
