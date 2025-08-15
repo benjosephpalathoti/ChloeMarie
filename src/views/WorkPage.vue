@@ -226,45 +226,53 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+/* ====== KNOBS (easy to tweak) ====== */
 .work-page{
-  /* shared knobs */
+  /* 1) Full-height strips so images fill top→bottom */
+  --header-h: 80px;                     /* change if your global header is taller/shorter */
+  /* If your header overlaps, use the next line instead of 100vh: */
+  /* --card-h: calc(100vh - var(--header-h)); */
+  --card-h: 100vh;                      /* removes the white space at the bottom */
+
   --card-w: 588px;
-  --card-h: 742px;
 
-  /* DESKTOP lane + pill */
-  --lane-w: clamp(260px, 20vw, 380px); /* lane width between the two vertical lines */
-  --lane-line: 2px;
-  --lane-color: #000;
+  /* 2) Lanes (desktop) – thinner and light grey */
+  --lane-w: clamp(160px, 14vw, 220px);  /* thinner space between the two lines */
+  --lane-line: 1px;                     /* thin line */
+  --lane-color: #e5e5e5;                /* light grey to match ref */
 
+  /* 3) Vertical pill (desktop) – bigger + Oswald */
+  --pill-fs: clamp(13px, 1.05vw, 18px);
+  --pill-pad-block: 18px;               /* top/bottom padding inside vertical pill */
+  --pill-pad-inline: 14px;              /* left/right padding inside vertical pill */
   --pill-bw: 2px;
   --pill-r: 999px;
 
+  /* 4) Mobile lanes + pill */
+  --mo-lane-w: min(320px, 78vw);        /* controls the distance between the two vertical lines */
+  --mo-lane-line: 1px;
+  --mo-lane-color: #e5e5e5;
+  --mo-pill-fs: clamp(14px, 5vw, 18px);
+  --mo-pill-pad: 12px 18px;
   background:#fff; color:#000;
 }
 
-/* ─── Desktop Layout ─────────────────────────────────────────── */
+/* ─── Desktop layout (unchanged except height uses --card-h) ─── */
 .container-1440{ width:100vw; margin:0; padding:0; box-sizing:border-box; }
 .pin{ position:relative; height:var(--card-h); overflow:hidden; }
-.track{
-  position:absolute; top:0; left:0; height:var(--card-h);
-  display:inline-flex; gap:0; will-change:transform;
-}
+.track{ position:absolute; top:0; left:0; height:var(--card-h); display:inline-flex; gap:0; will-change:transform; }
 .tail{ flex:0 0 24px; width:24px; }
-
 .panel{ position:relative; height:var(--card-h); }
 
-/* left intro (push first lane to the right) */
-.intro{
-  min-width: calc(var(--card-w) + 550px);
-  display:flex; align-items:flex-end;
-}
+/* Big title column – keep your existing offset; adjust if you want the first lane closer/farther */
+.intro{ min-width: calc(var(--card-w) + 520px); display:flex; align-items:flex-end; }
 .allworks{
   font-family:'Oswald', Arial, sans-serif; font-weight:900;
   font-size: clamp(120px, 20vw, 180px);
   line-height:.84; letter-spacing:-.02em; margin:0 0 8px 12px;
 }
 
-/* lane: just left/right borders = two long lines */
+/* ─── Lane (two vertical lines) ─── */
 .pre-rails{
   min-width: var(--lane-w);
   height: var(--card-h);
@@ -273,27 +281,31 @@ onBeforeUnmount(() => {
   position: relative;
 }
 
-/* attached vertical pill */
+/* Vertical pill – bigger, Oswald, filled black like the reference */
 .pre-pill{
-  position:absolute; left: 8px; bottom: 10px;
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-  background:#fff; color:#000; border: var(--pill-bw) solid #000;
-  border-radius: var(--pill-r);
-  padding: 12px 10px 16px;
+  position:absolute; left: 8px; bottom: 12px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  font-family:'Oswald', Arial, sans-serif;
+  font-size: var(--pill-fs); line-height:1;
+  background:#000; color:#fff;
+  border: var(--pill-bw) solid #000; border-radius: var(--pill-r);
+  padding: var(--pill-pad-block) var(--pill-pad-inline);
   writing-mode: vertical-rl; transform: rotate(180deg);
-  text-transform: uppercase; letter-spacing:.08em; font-size:12px; line-height:1;
+  text-transform: uppercase; letter-spacing:.08em;
   z-index: 2;
 }
-.pre-pill .pill-label{ font-weight: 800; }
-.pre-pill .pill-num{ opacity:.6; font-weight:600; }
+.pre-pill .pill-label{ font-weight:900; }
+.pre-pill .pill-num{ opacity:.9; font-weight:700; }
 
-/* your original filmstrip */
+/* ─── Your filmstrip cards ─── */
 .group{ min-width: calc(var(--card-w) * var(--cards)); }
 .cards{ height:100%; display:flex; gap:0; }
 .card{ position:relative; flex:0 0 var(--card-w); width:var(--card-w); height:var(--card-h); overflow:hidden; }
 .card + .card{ margin-left:-1px; } /* hide seam */
-.card img{ width:100%; height:100%; object-fit: cover; object-position:center; display:block; }
-
+.card img{
+  width:100%; height:100%;
+  object-fit: cover; object-position:center; display:block; transform:translateZ(0);
+}
 .card-title{
   position:absolute; left:24px; bottom:22px;
   font-family:'Oswald', Arial, sans-serif; font-weight:900; text-transform:uppercase;
@@ -301,52 +313,51 @@ onBeforeUnmount(() => {
   color:#fff; text-shadow:0 6px 24px rgba(0,0,0,.35);
 }
 
-/* ─── Mobile Layout ─────────────────────────────────────────── */
+/* ─── Mobile layout: vertical lanes + horizontal pill ─── */
 .mobile-work-layout { padding-top: 96px; padding-bottom: 48px; min-height: 100vh; }
 .mobile-work-header { padding: 0 16px 32px; }
 .mobile-allworks{
-  font-family: 'Oswald', Arial, sans-serif; font-weight: 900;
-  font-size: 18vw; line-height: .84; letter-spacing: -0.02em; margin: 0;
+  font-family:'Oswald', Arial, sans-serif; font-weight:900;
+  font-size: 18vw; line-height:.84; letter-spacing:-0.02em; margin:0;
 }
 
-/* vertical lanes; page scroll is vertical */
+/* container */
 .mobile-categories{ padding: 0 12px; display:grid; gap: 24px; }
-.mo-lane{
-  position: relative;
-  padding: 56px 0 12px;     /* space above for pill */
-  border-left: 2px solid #000;
-  border-right: 2px solid #000;
-}
 
-/* horizontal pill at the top of the lane */
-.mo-pill{
-  position:absolute; top: 8px; left: 50%;
-  transform: translateX(-50%);
-  display:flex; align-items:center; gap:10px;
-  padding: 10px 14px;
-  background:#fff; color:#000; border:2px solid #000; border-radius: 999px;
-  text-transform: uppercase; letter-spacing:.06em; font-weight:700;
+/* lane using centered pseudo-lines so we can control the gap with --mo-lane-w */
+.mo-lane{ position: relative; padding: 64px 0 12px; }
+.mo-lane::before,
+.mo-lane::after{
+  content:""; position:absolute; top:0; bottom:0;
+  width: var(--mo-lane-line); background: var(--mo-lane-color);
 }
-.mo-label{ font-family:'Oswald', Arial, sans-serif; font-weight:700; }
-.mo-num{ opacity:.6; font-weight:600; }
-.mo-dot{ width:6px; height:6px; border-radius:50%; background:#000; }
-.mo-chev{ width:18px; height:18px; transition: transform .2s ease; }
+.mo-lane::before{ left: calc(50% - var(--mo-lane-w)/2); }
+.mo-lane::after { right: calc(50% - var(--mo-lane-w)/2); }
+
+/* pill */
+.mo-pill{
+  position:absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  display:flex; align-items:center; gap:10px;
+  padding: var(--mo-pill-pad);
+  font-family:'Oswald', Arial, sans-serif; font-weight:900; font-size: var(--mo-pill-fs);
+  background:#000; color:#fff; border:2px solid #000; border-radius: 999px;
+  text-transform: uppercase; letter-spacing:.06em;
+}
+.mo-label{ font-weight:900; }
+.mo-num{ opacity:.9; font-weight:700; }
+.mo-dot{ width:6px; height:6px; border-radius:50%; background:#fff; }
+.mo-chev{ width:18px; height:18px; transition: transform .2s ease; fill:none; }
 .mo-chev.open{ transform: rotate(180deg); }
 
-/* frame + horizontal ribbon inside lane when open */
+/* frame + ribbon inside lane when open */
 .mo-frame{
   border:2px solid #000; border-radius: 18px;
   overflow:hidden; background:#fff; margin-top: 12px;
 }
-.mo-scroll{
-  display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling: touch;
-}
-.mo-scroll img{
-  width: 100%; height: auto; flex: 0 0 100%;
-  display:block; object-fit: cover; scroll-snap-align: start;
-}
+.mo-scroll{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling: touch; }
+.mo-scroll img{ width:100%; height:auto; flex:0 0 100%; display:block; object-fit:cover; scroll-snap-align:start; }
 
-/* toggles */
+/* Display toggles */
 .desktop-only{ display:block; }
 .mobile-only{ display:none; }
 @media (max-width: 768px){
