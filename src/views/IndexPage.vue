@@ -264,8 +264,8 @@ export default {
   .index .hero {
     position: relative;
     margin-top: 35vh; /* Space for the large logo text */
-    width: 100vw;
-    max-width: 100vw;
+    width: 80vw;
+    max-width: 80vw;
     height: 70vh;
     object-fit: cover;
     object-position: center;
