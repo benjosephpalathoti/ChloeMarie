@@ -152,7 +152,7 @@ export default {
         // Kill previous timeline if any
         if (this._logoTL) this._logoTL.kill();
 
-        // Scrub to neutral (x:0,y:0, scale:1) - ORIGINAL ANIMATION
+        // Scrub to neutral (x:0,y:0, scale:1)
         this._logoTL = gsap.timeline({
           scrollTrigger: {
             trigger: document.body,
