@@ -171,34 +171,34 @@ export default {
   .featured-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover !important;
+    object-fit: fill !important;
     object-position: center;
     border-radius: 0 !important;
   }
   
   /* Individual image sizing and spacing - matching screenshots */
   .featured-image:nth-child(1) {
-    width: 85vw !important;  /* Slightly narrower than full width */
+    width: 55vw !important;  /* Slightly narrower than full width */
     height: 55vh !important;  /* Medium height */
-    margin-bottom: 80px !important;  /* Space after */
+    margin-bottom: 180px !important;  /* Space after */
   }
   
   .featured-image:nth-child(2) {
-    width: 90vw !important;  /* Almost full width */
+    width: 70vw !important;  /* Almost full width */
     height: 45vh !important;  /* Shorter */
-    margin-bottom: 100px !important;  /* More space */
+    margin-bottom: 200px !important;  /* More space */
   }
   
   .featured-image:nth-child(3) {
-    width: 75vw !important;  /* Narrower */
+    width: 35vw !important;  /* Narrower */
     height: 60vh !important;  /* Taller */
-    margin-bottom: 70px !important;
+    margin-bottom: 170px !important;
   }
   
   .featured-image:nth-child(4) {
     width: 95vw !important;  /* Very wide */
     height: 40vh !important;  /* Short and wide */
-    margin-bottom: 90px !important;
+    margin-bottom: 190px !important;
   }
   
   .featured-image:nth-child(5) {
