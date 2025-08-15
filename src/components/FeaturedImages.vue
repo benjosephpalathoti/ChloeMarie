@@ -184,7 +184,7 @@ export default {
   }
   
   .featured-image:nth-child(2) {
-    width: 70vw !important;  /* Almost full width */
+    width: 10vw !important;  /* Almost full width */
     height: 45vh !important;  /* Shorter */
     margin-bottom: 200px !important;  /* More space */
   }
@@ -192,13 +192,13 @@ export default {
   .featured-image:nth-child(3) {
     width: 35vw !important;  /* Narrower */
     height: 60vh !important;  /* Taller */
-    margin-bottom: 170px !important;
+    margin-bottom: 270px !important;
   }
   
   .featured-image:nth-child(4) {
     width: 95vw !important;  /* Very wide */
     height: 40vh !important;  /* Short and wide */
-    margin-bottom: 190px !important;
+    margin-bottom: 290px !important;
   }
   
   .featured-image:nth-child(5) {
