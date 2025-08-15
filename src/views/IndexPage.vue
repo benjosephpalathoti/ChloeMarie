@@ -143,18 +143,18 @@ export default {
           // Safety check for valid measurements
           if (hBox.width === 0 || pBox.width === 0) return;
 
+          // Use font-size instead of scale for crisp text
           const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
           const pSize = parseFloat(getComputedStyle(proxy).fontSize);
-          const scaleStart = pSize / hSize;
-
+          
           const dx = pBox.left - hBox.left;
           const dy = pBox.top  - hBox.top;
 
-          // Start the header logo visually over the proxy
+          // Start the header logo visually over the proxy using font-size
           gsap.set(headerLogo, { 
             x: dx, 
             y: dy, 
-            scale: scaleStart, 
+            fontSize: pSize + "px", // Use actual font-size instead of scale
             transformOrigin: "0 0",
             force3D: true,
             backfaceVisibility: "hidden"
@@ -163,12 +163,12 @@ export default {
           // Kill previous timeline if any
           if (this._logoTL) this._logoTL.kill();
 
-          // Scrub to neutral (x:0,y:0, scale:1)
+          // Animate to final font-size instead of scale
           this._logoTL = gsap.timeline({
             scrollTrigger: {
               trigger: document.body,
               start: "top top",
-              end: () => "+=" + Math.round(window.innerHeight * 3.5), // longer = slower shrink
+              end: () => "+=" + Math.round(window.innerHeight * 3.5),
               scrub: 1.1,
               invalidateOnRefresh: true
             }
@@ -176,7 +176,7 @@ export default {
           .to(headerLogo, { 
             x: 0, 
             y: 0, 
-            scale: 1, 
+            fontSize: hSize + "px", // Animate to original font-size
             ease: "none",
             force3D: true,
             backfaceVisibility: "hidden"

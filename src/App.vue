@@ -357,13 +357,36 @@ export default {
 
 
 /* Add this to your App.vue .header-logo styles */
-.header-logo {
-  /* ... your existing styles ... */
+/* Replace your .header-logo styles in App.vue with this: */
+.header-logo{
+  position: fixed;
+  left: 12px;
+  top: 26px;
+  z-index: 1001;
+  font-family: 'Oswald', Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: .86;
+  letter-spacing: -0.02em;
+  font-size: 40px;
+  color: #000;
+  text-decoration: none;
+  opacity: 1;
+  pointer-events: auto;
   
-  /* ADD THESE for crisp rendering: */
+  /* CRITICAL: Anti-aliasing for crisp text */
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   backface-visibility: hidden;
+  
+  /* Force pixel-perfect rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  
+  /* Prevent blurry transforms */
+  transform: translateZ(0);
+  will-change: transform, font-size; /* Include font-size in will-change */
 }
 
 /* Responsive Media Queries */
