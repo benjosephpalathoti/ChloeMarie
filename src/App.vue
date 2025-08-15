@@ -367,15 +367,6 @@ export default {
   backface-visibility: hidden;
 }
 
-/* Add this media query to App.vue */
-@media (max-width: 768px) {
-  .header-logo {
-    /* Ensure no transforms on mobile for crispness */
-    transform: none !important;
-    will-change: auto;
-  }
-}
-
 /* Responsive Media Queries */
 @media (max-width: 1200px){
   .header-infos{ width: 100vw; left: 0; transform: none; padding: 0 16px; }
