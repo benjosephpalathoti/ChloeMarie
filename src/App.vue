@@ -136,15 +136,17 @@ export default {
   font-size: 40px;   /* final size */
   color: #000;
   text-decoration: none;
-  will-change: transform;
   opacity: 1;
   pointer-events: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  backface-visibility: hidden; /* Prevent flickering */
+  transform-origin: left top;
+  will-change: transform;
+  /* Critical for crisp text during scaling */
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+  text-rendering: geometricPrecision;
+  -webkit-transform: translateZ(0);
   -webkit-backface-visibility: hidden;
-  transform: translateZ(0); /* Force GPU acceleration */
+  -webkit-perspective: 1000px;
 }
 
 /* Header infos grid (unchanged from your version, trimmed) */

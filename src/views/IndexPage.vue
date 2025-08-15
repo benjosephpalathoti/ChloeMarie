@@ -136,33 +136,55 @@ export default {
       if (!headerLogo || !proxy) return;
 
       const setup = () => {
-        const hBox = headerLogo.getBoundingClientRect();
-        const pBox = proxy.getBoundingClientRect();
-
+        const isMobile = window.innerWidth <= 768;
+        
+        // Get sizes for scale calculation
         const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
         const pSize = parseFloat(getComputedStyle(proxy).fontSize);
         const scaleStart = pSize / hSize;
 
-        const dx = pBox.left - hBox.left;
-        const dy = pBox.top  - hBox.top;
-
-        // Start the header logo visually over the proxy
-        gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0" });
+        if (isMobile) {
+          // Mobile: Only scale, no translation needed since both are at same position
+          gsap.set(headerLogo, { 
+            scale: scaleStart, 
+            transformOrigin: "0 0",
+            force3D: true
+          });
+        } else {
+          // Desktop: Get positions for translation
+          const hBox = headerLogo.getBoundingClientRect();
+          const pBox = proxy.getBoundingClientRect();
+          const dx = pBox.left - hBox.left;
+          const dy = pBox.top - hBox.top;
+          
+          gsap.set(headerLogo, { 
+            x: dx, 
+            y: dy, 
+            scale: scaleStart, 
+            transformOrigin: "0 0" 
+          });
+        }
 
         // Kill previous timeline if any
         if (this._logoTL) this._logoTL.kill();
 
-        // Scrub to neutral (x:0,y:0, scale:1)
+        // Create the animation timeline (same for both)
         this._logoTL = gsap.timeline({
           scrollTrigger: {
             trigger: document.body,
             start: "top top",
-            end: () => "+=" + Math.round(window.innerHeight * 3.5), // longer = slower shrink
-            scrub: 1.1,
+            end: () => "+=" + Math.round(window.innerHeight * (isMobile ? 2 : 3.5)),
+            scrub: isMobile ? 0.5 : 1.1,
             invalidateOnRefresh: true
           }
-        })
-        .to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
+        });
+
+        // Animate based on device
+        if (isMobile) {
+          this._logoTL.to(headerLogo, { scale: 1, ease: "none" }, 0);
+        } else {
+          this._logoTL.to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
+        }
       };
 
       setup();
@@ -281,7 +303,7 @@ export default {
 @media (max-width: 480px) {
   .hero-logo-proxy {
     left: 12px;
-    top: 100px; /* Position below header */
+    top: 15px; /* Same as header logo position */
     font-size: 24vw; /* Even larger on smallest screens */
     line-height: 0.8;
   }
