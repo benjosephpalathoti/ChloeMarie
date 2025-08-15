@@ -146,20 +146,20 @@ export default {
   .featured-images-art {
     display: flex !important;
     flex-direction: column !important;
-    gap: 90px !important; /* Good spacing between images */
-    padding: 40px 0 !important;
+    gap: 0 !important; /* We'll use individual margins instead */
+    padding: 60px 0 !important;
     margin-top: 0 !important;
+    align-items: center !important; /* Center all images */
   }
   
   .featured-image {
-    width: 80vw !important;
-    height: auto !important;
     grid-column: unset !important;
     grid-row: unset !important;
-    margin: 0 !important;
     padding: 0 !important;
     position: relative;
     transform: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
   
   /* Remove hover effects on mobile */
@@ -171,75 +171,102 @@ export default {
   .featured-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover !important; /* Cover to fill the viewport */
+    object-fit: cover !important;
     object-position: center;
     border-radius: 0 !important;
   }
   
-  /* Varied heights for visual rhythm - alternating big/small pattern */
+  /* Individual image sizing and spacing - matching screenshots */
   .featured-image:nth-child(1) {
-    height: 85vh !important; /* Big */
+    width: 85vw !important;  /* Slightly narrower than full width */
+    height: 55vh !important;  /* Medium height */
+    margin-bottom: 80px !important;  /* Space after */
   }
   
   .featured-image:nth-child(2) {
-    height: 65vh !important; /* Smaller */
+    width: 90vw !important;  /* Almost full width */
+    height: 45vh !important;  /* Shorter */
+    margin-bottom: 100px !important;  /* More space */
   }
   
   .featured-image:nth-child(3) {
-    height: 75vh !important; /* Medium-big */
+    width: 75vw !important;  /* Narrower */
+    height: 60vh !important;  /* Taller */
+    margin-bottom: 70px !important;
   }
   
   .featured-image:nth-child(4) {
-    height: 60vh !important; /* Small */
+    width: 95vw !important;  /* Very wide */
+    height: 40vh !important;  /* Short and wide */
+    margin-bottom: 90px !important;
   }
   
   .featured-image:nth-child(5) {
-    height: 80vh !important; /* Big */
+    width: 80vw !important;  /* Medium width */
+    height: 65vh !important;  /* Tall */
+    margin-bottom: 85px !important;
   }
   
   .featured-image:nth-child(6) {
-    height: 70vh !important; /* Medium */
+    width: 88vw !important;  
+    height: 50vh !important;  /* Medium */
+    margin-bottom: 75px !important;
   }
   
   .featured-image:nth-child(7) {
-    height: 90vh !important; /* Biggest - grand finale */
+    width: 92vw !important;  /* Almost full for finale */
+    height: 70vh !important;  /* Tallest */
+    margin-bottom: 60px !important;
   }
 }
 
-/* ─── Small Mobile (up to 480px) - Adjusted heights for smaller screens ─── */
+/* ─── Small Mobile (up to 480px) - Adjusted for smaller screens ─── */
 @media (max-width: 480px) {
   .featured-images-art {
-    gap: 30px !important; /* Slightly less gap on small screens */
-    padding: 30px 0 !important;
+    padding: 40px 0 !important;
   }
   
-  /* Slightly reduced heights for small screens but maintain rhythm */
+  /* Slightly adjusted dimensions for small screens */
   .featured-image:nth-child(1) {
-    height: 75vh !important; /* Big */
+    width: 90vw !important;  /* Wider on small screens */
+    height: 50vh !important;  
+    margin-bottom: 60px !important;  /* Less space on small screens */
   }
   
   .featured-image:nth-child(2) {
-    height: 55vh !important; /* Smaller */
+    width: 95vw !important;
+    height: 40vh !important;
+    margin-bottom: 70px !important;
   }
   
   .featured-image:nth-child(3) {
-    height: 65vh !important; /* Medium-big */
+    width: 80vw !important;
+    height: 55vh !important;
+    margin-bottom: 55px !important;
   }
   
   .featured-image:nth-child(4) {
-    height: 50vh !important; /* Small */
+    width: 100vw !important;  /* Full width on small */
+    height: 35vh !important;
+    margin-bottom: 65px !important;
   }
   
   .featured-image:nth-child(5) {
-    height: 70vh !important; /* Big */
+    width: 85vw !important;
+    height: 60vh !important;
+    margin-bottom: 60px !important;
   }
   
   .featured-image:nth-child(6) {
-    height: 60vh !important; /* Medium */
+    width: 92vw !important;
+    height: 45vh !important;
+    margin-bottom: 55px !important;
   }
   
   .featured-image:nth-child(7) {
-    height: 80vh !important; /* Biggest */
+    width: 95vw !important;
+    height: 65vh !important;
+    margin-bottom: 40px !important;
   }
 }
 
