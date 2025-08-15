@@ -22,44 +22,123 @@ const root = ref(null);
 const wrap = ref(null);
 const offset = ref(1.5); // fractional index; 0 centers first, 1.5 starts between 1st/2nd
 const isDown = ref(false);
+const isMobile = ref(false);
 let startX = 0;
 let startOffset = 0;
 let wheelRaf = 0;
 
+// Check mobile state
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 768;
+}
+
+// Mobile-aware responsive calculations
+const effectiveSize = computed(() => {
+  if (isMobile.value) {
+    return Math.min(props.size, window.innerWidth * 0.95);
+  }
+  return props.size;
+});
+
+const effectiveCardW = computed(() => {
+  if (isMobile.value) {
+    return Math.min(props.cardW, effectiveSize.value * 0.35);
+  }
+  return props.cardW;
+});
+
+const effectiveCardH = computed(() => {
+  if (isMobile.value) {
+    return Math.min(props.cardH, effectiveSize.value * 0.45);
+  }
+  return props.cardH;
+});
+
+const effectiveGap = computed(() => {
+  if (isMobile.value) {
+    return Math.max(props.gap * 0.6, 16);
+  }
+  return props.gap;
+});
+
+const effectiveBend = computed(() => {
+  if (isMobile.value) {
+    return props.bend * 0.5; // Less dramatic curve on mobile
+  }
+  return props.bend;
+});
+
+const effectiveTilt = computed(() => {
+  if (isMobile.value) {
+    return props.tilt * 0.7; // Less tilt on mobile
+  }
+  return props.tilt;
+});
+
 // one card step in px along X
-const stepPx = computed(() => props.cardW + props.gap);
+const stepPx = computed(() => effectiveCardW.value + effectiveGap.value);
 
 // visible height of panel: card plus some breathing room
-const panelH = computed(() => props.cardH + 140);
+const panelH = computed(() => {
+  const baseHeight = effectiveCardH.value + 140;
+  if (isMobile.value) {
+    return Math.min(baseHeight, window.innerHeight * 0.6);
+  }
+  return baseHeight;
+});
 
 // helper: animate offset to an index (snap/focus)
 function focusIndex(i) {
-  gsap.to(offset, { value: i, duration: 0.6, ease: "power3.out" });
+  const duration = isMobile.value ? 0.4 : 0.6; // Faster on mobile
+  gsap.to(offset, { value: i, duration, ease: "power3.out" });
 }
 
-// drag
+// drag with mobile-optimized touch handling
 function onPointerDown(e) {
   isDown.value = true;
   startX = ("touches" in e ? e.touches[0].clientX : e.clientX) || 0;
   startOffset = offset.value;
+  
+  // Prevent scrolling on mobile while dragging
+  if (isMobile.value) {
+    e.preventDefault();
+    document.body.style.overflowY = 'hidden';
+  }
+  
   window.addEventListener("pointermove", onPointerMove, { passive: false });
   window.addEventListener("pointerup", onPointerUp);
+  window.addEventListener("touchmove", onPointerMove, { passive: false });
+  window.addEventListener("touchend", onPointerUp);
 }
+
 function onPointerMove(e) {
   if (!isDown.value) return;
   e.preventDefault();
   const x = ("touches" in e ? e.touches[0].clientX : e.clientX) || 0;
   const dx = x - startX;               // pixels dragged
-  offset.value = startOffset - dx / stepPx.value; // 1 step per card width
-}
-function onPointerUp() {
-  isDown.value = false;
-  window.removeEventListener("pointermove", onPointerMove);
-  window.removeEventListener("pointerup", onPointerUp);
+  
+  // More sensitive dragging on mobile
+  const sensitivity = isMobile.value ? 1.2 : 1;
+  offset.value = startOffset - (dx * sensitivity) / stepPx.value; // 1 step per card width
 }
 
-// wheel
+function onPointerUp() {
+  isDown.value = false;
+  if (isMobile.value) {
+    document.body.style.overflowY = '';
+  }
+  
+  window.removeEventListener("pointermove", onPointerMove);
+  window.removeEventListener("pointerup", onPointerUp);
+  window.removeEventListener("touchmove", onPointerMove);
+  window.removeEventListener("touchend", onPointerUp);
+}
+
+// wheel with mobile considerations
 function onWheel(e) {
+  // Disable wheel on mobile (touch devices)
+  if (isMobile.value) return;
+  
   e.preventDefault();
   const delta = (e.deltaY || e.wheelDelta || 0) * 0.0025; // tune wheel sensitivity
   const target = offset.value + delta;
@@ -69,16 +148,26 @@ function onWheel(e) {
   });
 }
 
+// Handle resize
+function onResize() {
+  checkMobile();
+}
+
 onMounted(() => {
+  checkMobile();
   const el = root.value;
   el.addEventListener("wheel", onWheel, { passive: false });
   el.addEventListener("pointerdown", onPointerDown, { passive: false });
+  el.addEventListener("touchstart", onPointerDown, { passive: false });
+  window.addEventListener("resize", onResize, { passive: true });
 });
 
 onBeforeUnmount(() => {
   const el = root.value;
   el?.removeEventListener("wheel", onWheel);
   el?.removeEventListener("pointerdown", onPointerDown);
+  el?.removeEventListener("touchstart", onPointerDown);
+  window.removeEventListener("resize", onResize);
   cancelAnimationFrame(wheelRaf);
 });
 
@@ -91,16 +180,23 @@ onBeforeUnmount(() => {
  --------------------------------------------------------*/
 function styleFor(i) {
   const p = i - offset.value;
-  const c = props.size / 2;          // panel center
+  const c = effectiveSize.value / 2;          // panel center
   const x = c + p * stepPx.value;
-  const y = (props.bend * (p * p) * 0.18); // parabolic arc
-  const rot = props.tilt * p;
+  const y = (effectiveBend.value * (p * p) * 0.18); // parabolic arc
+  const rot = effectiveTilt.value * p;
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-  const sc = clamp(1 - Math.abs(p) * 0.08, 0.7, 1.04);
-  const op = clamp(1 - Math.abs(p) * 0.12, 0.35, 1);
+  
+  // Mobile-optimized scaling and opacity
+  const scaleMultiplier = isMobile.value ? 0.06 : 0.08;
+  const opacityMultiplier = isMobile.value ? 0.10 : 0.12;
+  const minScale = isMobile.value ? 0.8 : 0.7;
+  const minOpacity = isMobile.value ? 0.4 : 0.35;
+  
+  const sc = clamp(1 - Math.abs(p) * scaleMultiplier, minScale, 1.04);
+  const op = clamp(1 - Math.abs(p) * opacityMultiplier, minOpacity, 1);
 
   return {
-    transform: `translate3d(${x - props.cardW / 2}px, ${y}px, 0)
+    transform: `translate3d(${x - effectiveCardW.value / 2}px, ${y}px, 0)
                 rotate(${rot}deg)`,
     zIndex: String(1000 - Math.abs(p) * 10 | 0),
     opacity: op,
@@ -113,11 +209,12 @@ function styleFor(i) {
   <div
     class="rb-panel"
     ref="root"
+    :class="{ 'mobile': isMobile }"
     :style="{
-      '--panel-w': size + 'px',
+      '--panel-w': effectiveSize + 'px',
       '--panel-h': panelH + 'px',
-      '--card-w': cardW + 'px',
-      '--card-h': cardH + 'px',
+      '--card-w': effectiveCardW + 'px',
+      '--card-h': effectiveCardH + 'px',
       '--radius': borderRadius + 'px'
     }"
   >
@@ -129,12 +226,29 @@ function styleFor(i) {
           class="card"
           :style="styleFor(i)"
           @click="focusIndex(i)"
-          aria-label="focus"
+          :aria-label="`Focus image ${i + 1}`"
         >
-          <img :src="img.src" :alt="img.alt || ('image '+(i+1))" />
+          <img :src="img.src" :alt="img.alt || ('image '+(i+1))" loading="lazy" />
           <span v-if="img.caption" class="cap">{{ img.caption }}</span>
         </button>
       </div>
+    </div>
+    
+    <!-- Mobile indicators -->
+    <div v-if="isMobile" class="mobile-indicators">
+      <button
+        v-for="(img, i) in images"
+        :key="`indicator-${i}`"
+        class="indicator"
+        :class="{ 'active': Math.abs(i - offset) < 0.5 }"
+        @click="focusIndex(i)"
+        :aria-label="`Go to image ${i + 1}`"
+      ></button>
+    </div>
+    
+    <!-- Mobile instruction text -->
+    <div v-if="isMobile" class="mobile-instruction">
+      Swipe to browse
     </div>
   </div>
 </template>
@@ -181,9 +295,11 @@ function styleFor(i) {
   transform-origin: center center;
   transition: box-shadow .2s ease;
 }
+
 .card:hover{
   box-shadow: 0 14px 40px rgba(0,0,0,.22);
 }
+
 .card img{
   width: 100%;
   height: 100%;
@@ -208,8 +324,183 @@ function styleFor(i) {
   opacity: .9;
 }
 
-/* Responsive size scaling */
+/* ─── Mobile-Specific Styles ─────────────────────────────────── */
+
+.rb-panel.mobile {
+  margin: 20px auto 0;
+  box-shadow: 
+    inset 0 0 0 1px rgba(254, 254, 254, 0.04),
+    0 4px 20px rgba(0,0,0,0.1);
+}
+
+.mobile .card {
+  top: 40px; /* Less top padding on mobile */
+}
+
+.mobile .cap {
+  font-size: 14px;
+  bottom: -30px;
+  color: #333; /* Darker text for better mobile readability */
+}
+
+/* Mobile indicators */
+.mobile-indicators {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 1001;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background: rgba(0,0,0,0.7);
+  transform: scale(1.2);
+}
+
+/* Mobile instruction */
+.mobile-instruction {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #666;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+
+/* ─── Touch Interactions ─────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .card {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+  }
+  
+  .card:active {
+    box-shadow: 0 8px 25px rgba(0,0,0,.3);
+  }
+  
+  /* Disable hover effects on touch devices */
+  .card:hover {
+    box-shadow: none;
+  }
+  
+  .rb-panel {
+    touch-action: pan-y; /* Allow vertical scrolling but prevent horizontal */
+  }
+  
+  .rb-inner {
+    perspective: 800px; /* Reduced perspective for mobile */
+  }
+}
+
+/* ─── Performance Optimizations ─────────────────────────────── */
+
+@media (max-width: 768px) {
+  .card {
+    will-change: transform, opacity;
+    transform: translateZ(0); /* Force hardware acceleration */
+  }
+  
+  .rb-inner {
+    will-change: transform;
+  }
+  
+  /* Reduce animations for better mobile performance */
+  @media (prefers-reduced-motion: reduce) {
+    .card {
+      transition: none;
+    }
+    
+    .indicator {
+      transition: none;
+    }
+  }
+}
+
+/* ─── Responsive Size Scaling ────────────────────────────────── */
+
+@media (max-width: 1200px) {
+  .rb-panel { 
+    width: 90vw; 
+    max-width: var(--panel-w);
+  }
+}
+
 @media (max-width: 900px){
-  .rb-panel{ width: 94vw; }
+  .rb-panel{ 
+    width: 94vw; 
+    margin: 16px auto 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .rb-panel {
+    width: 96vw;
+    margin: 12px auto 0;
+    border-radius: 12px;
+  }
+  
+  .cap {
+    font-size: 13px;
+    bottom: -25px;
+  }
+  
+  .mobile-instruction {
+    bottom: -30px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rb-panel {
+    width: 98vw;
+    margin: 8px auto 0;
+    border-radius: 8px;
+  }
+  
+  .mobile .card {
+    top: 30px;
+  }
+  
+  .cap {
+    font-size: 12px;
+    bottom: -20px;
+  }
+  
+  .mobile-indicators {
+    bottom: 10px;
+  }
+  
+  .indicator {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .mobile-instruction {
+    bottom: -25px;
+    font-size: 10px;
+  }
+}
+
+/* ─── Ultra-wide Screens ─────────────────────────────────────── */
+@media (min-width: 1600px) {
+  .rb-panel {
+    max-width: 1200px;
+  }
 }
 </style>

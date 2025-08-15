@@ -15,8 +15,6 @@
         <!-- Small photo/copyright -->
         <div class="footer-block-initial" data-reveal="wipe">
           <img src="/assets/images/small-photo.jpg" alt="Portrait" />
-          
-        
         </div>
       </div>
 
@@ -29,16 +27,16 @@
       <section class="circular-gallery-section" data-reveal="wipe">
         <CircularGallery
           :images="circularImages"
-          :size="1080"
-          :card-w="260"
-          :card-h="340"
-          :gap="34"
-          :bend="120"
-          :tilt="10"
+          :size="circularGallerySize"
+          :card-w="circularCardWidth"
+          :card-h="circularCardHeight"
+          :gap="circularGap"
+          :bend="circularBend"
+          :tilt="circularTilt"
         />
       </section>
 
-      <!-- If you don’t have this component, leave it commented -->
+      <!-- If you don't have this component, leave it commented -->
       <!-- <FeaturedProject /> -->
     </div>
   </div>
@@ -75,17 +73,62 @@ export default {
         { src: "/assets/circular/06.jpeg", },
         { src: "/assets/circular/07.jpeg",  },
       ],
+      // Responsive circular gallery settings
+      windowWidth: 0
     };
+  },
+  computed: {
+    // Responsive circular gallery properties
+    circularGallerySize() {
+      if (this.windowWidth <= 480) return 300;
+      if (this.windowWidth <= 768) return 400;
+      if (this.windowWidth <= 1024) return 600;
+      return 1080;
+    },
+    circularCardWidth() {
+      if (this.windowWidth <= 480) return 120;
+      if (this.windowWidth <= 768) return 150;
+      if (this.windowWidth <= 1024) return 200;
+      return 260;
+    },
+    circularCardHeight() {
+      if (this.windowWidth <= 480) return 160;
+      if (this.windowWidth <= 768) return 200;
+      if (this.windowWidth <= 1024) return 260;
+      return 340;
+    },
+    circularGap() {
+      if (this.windowWidth <= 480) return 16;
+      if (this.windowWidth <= 768) return 20;
+      if (this.windowWidth <= 1024) return 24;
+      return 34;
+    },
+    circularBend() {
+      if (this.windowWidth <= 768) return 80;
+      return 120;
+    },
+    circularTilt() {
+      if (this.windowWidth <= 768) return 5;
+      return 10;
+    }
   },
   mounted() {
     this.initLogoDock();
-    window.addEventListener("resize", this.refreshLogoDock, { passive: true });
+    this.updateWindowWidth();
+    window.addEventListener("resize", this.handleResize, { passive: true });
   },
   beforeUnmount() {
-    window.removeEventListener("resize", this.refreshLogoDock);
+    window.removeEventListener("resize", this.handleResize);
     ScrollTrigger.getAll().forEach(t => t.kill());
   },
   methods: {
+    handleResize() {
+      this.refreshLogoDock();
+      this.updateWindowWidth();
+    },
+    updateWindowWidth() {
+      this.windowWidth = window.innerWidth;
+    },
     // Animate the fixed .header-logo from the proxy's start rect -> its final rect
     initLogoDock() {
       const headerLogo = document.querySelector(".header-logo");
@@ -149,6 +192,25 @@ export default {
   pointer-events: none;
 }
 
+/* Mobile responsive proxy positioning */
+@media (max-width: 768px) {
+  .hero-logo-proxy {
+    left: -20px;
+    top: 100px; /* Start below the mobile header */
+    font-size: 20vw; /* Larger on mobile to match screenshots */
+    line-height: 0.8;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-logo-proxy {
+    left: -16px;
+    top: 90px;
+    font-size: 22vw; /* Even larger on small mobile */
+    line-height: 0.75;
+  }
+}
+
 /* Circular gallery section spacing */
 .circular-gallery-section{
   padding: 72px 0 96px;
@@ -159,5 +221,105 @@ export default {
 /* Keep hero layers under the fixed header */
 .index .hero,
 .index .left,
-.footer-block-initial{ z-index: 100; position: relative; }
+.footer-block-initial{ 
+  z-index: 100; 
+  position: relative; 
+}
+
+/* ─── Mobile Responsive Styles ────────────────────────────────── */
+
+/* Mobile adjustments for hero section */
+@media (max-width: 768px) {
+  .index {
+    min-height: auto !important;
+    padding-bottom: 2rem;
+  }
+  
+  .circular-gallery-section {
+    padding: 40px 16px 60px;
+    overflow-x: hidden;
+  }
+  
+  .featured-section {
+    padding: 2rem 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .circular-gallery-section {
+    padding: 30px 12px 40px;
+  }
+  
+  .featured-section {
+    padding: 1.5rem 12px;
+  }
+}
+
+/* Ensure proper spacing on mobile */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Mobile hero layout adjustments */
+@media (max-width: 768px) {
+  .index .hero {
+    margin-top: 200px; /* Account for large logo space + fixed header */
+    margin-bottom: 2rem;
+  }
+  
+  .footer-block-initial {
+    margin: 2rem 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .index .hero {
+    margin-top: 180px; /* Adjusted for mobile logo size */
+    margin-bottom: 1.5rem;
+  }
+  
+  .footer-block-initial {
+    margin: 1.5rem 12px;
+  }
+}
+
+/* Touch-friendly circular gallery on mobile */
+@media (max-width: 768px) {
+  .circular-gallery-section {
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Responsive container max-width adjustments */
+@media (max-width: 1440px) {
+  .container {
+    max-width: 100%;
+  }
+}
+
+/* Prevent horizontal overflow on mobile */
+@media (max-width: 768px) {
+  .index {
+    overflow-x: hidden;
+  }
+  
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Improve performance on mobile */
+@media (max-width: 768px) {
+  .hero-logo-proxy,
+  .index .hero,
+  .footer-block-initial {
+    will-change: auto;
+    transform: translateZ(0);
+  }
+}
 </style>

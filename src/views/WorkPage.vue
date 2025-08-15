@@ -1,6 +1,7 @@
 <template>
   <main class="work-page">
-    <section class="pin container-1440" ref="pinEl">
+    <!-- Desktop Layout -->
+    <section class="pin container-1440 desktop-only" ref="pinEl">
       <!-- rails (hidden; re-enable if you want them) -->
       <div class="rails" aria-hidden="true">
         <div class="rail"></div>
@@ -52,6 +53,46 @@
         </div>
       </div>
     </section>
+
+    <!-- Mobile Layout -->
+    <section class="mobile-work-layout mobile-only">
+      <!-- Mobile Title -->
+      <div class="mobile-work-header">
+        <h1 class="mobile-allworks">ALL<br />WORKS</h1>
+      </div>
+
+      <!-- Mobile Categories - Simple Vertical Scroll -->
+      <div class="mobile-categories">
+        <div 
+          v-for="(sec, i) in sections" 
+          :key="sec.key"
+          class="mobile-category"
+        >
+          <!-- Category Title -->
+          <div class="mobile-category-header">
+            <h2 class="category-title">{{ sec.title }}</h2>
+            <span class="category-number">{{ String(i+1).padStart(2,'0') }}</span>
+          </div>
+
+          <!-- Category Images Grid -->
+          <div class="mobile-category-grid">
+            <div 
+              v-for="(img, j) in sec.images" 
+              :key="j"
+              class="mobile-work-item"
+              @click="goSeries(sec.key, j)"
+            >
+              <img
+                :src="img.src"
+                :alt="img.alt || `${sec.title} ${j+1}`"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </template>
 
@@ -64,6 +105,9 @@ gsap.registerPlugin(ScrollTrigger)
 
 /* === DATA === */
 const router = useRouter()
+
+// Mobile state - removed expandable functionality
+// const expandedCategories = ref([])
 
 // Click: open dedicated vertical page and jump to the clicked image (?i=index)
 function goSeries(sectionKey, index){
@@ -120,7 +164,17 @@ const sections = ref([
   },
 ])
 
-/* === REFS & STATE === */
+/* === MOBILE FUNCTIONS - removed expandable functionality === */
+// function toggleCategory(index) {
+//   const idx = expandedCategories.value.indexOf(index)
+//   if (idx > -1) {
+//     expandedCategories.value.splice(idx, 1)
+//   } else {
+//     expandedCategories.value.push(index)
+//   }
+// }
+
+/* === DESKTOP REFS & STATE === */
 const pinEl = ref(null)     // pinned viewport
 const trackEl = ref(null)   // long track that slides
 const introEl = ref(null)   // intro panel
@@ -135,6 +189,8 @@ let sectionStarts = [] // X offsets for pill jumps
 function compute() {
   const vp = pinEl.value
   const tr = trackEl.value
+  if (!vp || !tr) return { endX: 0, groups: [] }
+  
   const introW = introEl.value?.getBoundingClientRect().width || 0
   const groups = Array.from(tr.querySelectorAll('.group'))
 
@@ -153,7 +209,12 @@ function compute() {
 }
 
 function setup() {
+  // Skip setup on mobile
+  if (window.innerWidth <= 768) return
+  
   const tr = trackEl.value
+  if (!tr) return
+  
   const { endX, groups } = compute()
 
   anim?.kill()
@@ -185,6 +246,8 @@ function setup() {
 }
 
 function onAssetLoad() {
+  if (window.innerWidth <= 768) return // Skip on mobile
+  
   imgCount++
   if (imgCount === 1 || imgCount % 2 === 0) {
     ScrollTrigger.refresh()
@@ -195,13 +258,20 @@ function onAssetLoad() {
 function onResize() {
   cancelAnimationFrame(resizeRaf)
   resizeRaf = requestAnimationFrame(() => {
-    ScrollTrigger.refresh()
-    setup()
+    if (window.innerWidth > 768) {
+      ScrollTrigger.refresh()
+      setup()
+    } else {
+      // Kill desktop animations on mobile
+      st?.kill()
+      anim?.kill()
+      ScrollTrigger.getAll().forEach(t => t.kill())
+    }
   })
 }
 
 function scrollToSection(i) {
-  if (!st) return
+  if (!st || window.innerWidth <= 768) return
   const { endX } = compute()
   const targetX = sectionStarts[i] || 0
   const progress = endX ? targetX / endX : 0
@@ -211,7 +281,9 @@ function scrollToSection(i) {
 
 onMounted(async () => {
   await nextTick()
-  requestAnimationFrame(setup)
+  if (window.innerWidth > 768) {
+    requestAnimationFrame(setup)
+  }
   window.addEventListener('resize', onResize, { passive: true })
 })
 
@@ -238,6 +310,8 @@ onBeforeUnmount(() => {
 
   background:#fff; color:#000;
 }
+
+/* ─── Desktop Layout ─────────────────────────────────────────── */
 
 /* full-bleed, zero padding/gaps */
 .container-1440{ width:100vw; margin:0; padding:0; box-sizing:border-box; }
@@ -309,9 +383,162 @@ onBeforeUnmount(() => {
   color:#fff; text-shadow:0 6px 24px rgba(0,0,0,.35);
 }
 
+/* ─── Mobile Layout ─────────────────────────────────────────── */
+
+.mobile-work-layout {
+  display: none;
+  padding-top: 100px;
+  padding-bottom: 60px;
+  min-height: 100vh;
+}
+
+.mobile-work-header {
+  padding: 0 16px 40px;
+}
+
+.mobile-allworks {
+  font-family: 'Oswald', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 16vw;
+  line-height: 0.84;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.mobile-categories {
+  padding: 0;
+}
+
+.mobile-category {
+  margin-bottom: 60px;
+}
+
+.mobile-category:last-child {
+  margin-bottom: 0;
+}
+
+.mobile-category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px 20px;
+  margin-bottom: 20px;
+}
+
+.category-title {
+  font-family: 'Oswald', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #000;
+  margin: 0;
+}
+
+.category-number {
+  font-family: 'Oswald', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  color: #666;
+}
+
+.mobile-category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.mobile-work-item {
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.mobile-work-item:hover {
+  transform: scale(0.98);
+}
+
+.mobile-work-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ─── Responsive Display Control ────────────────────────────── */
+
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+  
+  .mobile-only {
+    display: block;
+  }
+  
+  .mobile-work-layout {
+    display: block;
+  }
+}
+
+/* ─── Mobile Fine-tuning ─────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .mobile-work-header {
+    padding: 0 12px 30px;
+  }
+  
+  .mobile-allworks {
+    font-size: 18vw;
+  }
+  
+  .mobile-category-header {
+    padding: 0 12px 18px;
+    margin-bottom: 18px;
+  }
+  
+  .category-title {
+    font-size: 18px;
+  }
+  
+  .category-number {
+    font-size: 16px;
+  }
+  
+  .mobile-category-grid {
+    gap: 10px;
+    padding: 0 12px;
+  }
+}
+
 /* responsive: keep fixed card box on tablet too */
-@media (max-width:1200px){
+@media (max-width:1200px) and (min-width: 769px) {
   .pin{ height:var(--card-h); }
   .card{ width:var(--card-w); height:var(--card-h); }
+}
+
+/* ─── Touch Interactions ─────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .mobile-category-header,
+  .mobile-work-item {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  .mobile-work-item:active {
+    transform: scale(0.95);
+  }
 }
 </style>

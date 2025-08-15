@@ -91,26 +91,29 @@ let setX, setY, setRX, setRY, onPointerMove, onPointerLeave;
 onMounted(() => {
   document.body.classList.add("header-on-photo");
 
+  // Check if mobile to conditionally apply complex animations
+  const isMobile = window.innerWidth <= 768;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+
   // All animations are tied to the INFO block
   const infoEndEl = heroContent.value || hero.value;
   const common = {
     trigger: hero.value,
-    start: () => `top+=${START_OFFSET} top`,
+    start: () => `top+=${isMobile ? START_OFFSET * 0.5 : START_OFFSET} top`, // Faster start on mobile
     endTrigger: infoEndEl,
     end: () => `bottom-=${END_EARLY} top`,
     scrub: true
     // , markers: true
   };
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const isCoarse = window.matchMedia('(pointer: coarse)').matches;
   const imgEl = hero.value?.querySelector(".bg");
 
-  // 1) Scroll parallax/fades
+  // 1) Scroll parallax/fades (simplified on mobile)
   if (imgEl) {
     bgParallaxTween = gsap.to(imgEl, {
-      yPercent: -10,
-      scale: 1.04,
+      yPercent: isMobile ? -5 : -10, // Less parallax on mobile for performance
+      scale: isMobile ? 1.02 : 1.04,  // Less scale on mobile
       ease: "none",
       scrollTrigger: { ...common }
     });
@@ -132,7 +135,7 @@ onMounted(() => {
 
   if (fadeBottom.value) {
     edgeTween = gsap.to(hero.value, {
-      "--fadeH": "60svh",
+      "--fadeH": isMobile ? "40svh" : "60svh", // Shorter fade on mobile
       ease: "none",
       scrollTrigger: { ...common }
     });
@@ -145,7 +148,7 @@ onMounted(() => {
   }
 
   // 2) Cursor parallax + 3D tilt (desktop only, respect reduced motion)
-  if (imgEl && !isCoarse && !prefersReduced.matches) {
+  if (imgEl && !isCoarse && !prefersReduced.matches && !isMobile) {
     gsap.set(imgEl, { transformPerspective: 900, transformOrigin: '50% 50%' });
 
     setX  = gsap.quickTo(imgEl, 'x',         { duration: 0.6, ease: 'power3.out' });
@@ -348,15 +351,19 @@ onBeforeUnmount(() => {
   font-size: 12px; letter-spacing: .06em; opacity:.85;
 }
 
+/* ─── Enhanced Mobile Responsive Styles ─────────────────────── */
+
 /* responsive */
 @media (max-width: 1200px){
   .text-col{ grid-column: 4 / 13; }
   .portrait{ grid-column: 2 / 6; }
   .buttons{  grid-column: 6 / 13; }
 }
+
 @media (max-width: 1024px){
   .text-col{ grid-column: 2 / -2; }
 }
+
 @media (max-width: 900px){
   .contact-grid{
     grid-template-columns: repeat(6, minmax(0,1fr));
@@ -368,6 +375,194 @@ onBeforeUnmount(() => {
   .cta-pill{ --h: 102px; padding: 0 28px; }
   .band-footer{ flex-direction:column; gap:8px; align-items:flex-start; }
 }
+
+/* ─── Mobile Optimizations (768px and below) ─────────────────── */
+@media (max-width: 768px) {
+  .about-hero {
+    min-height: 100vh; /* Use vh instead of svh for better mobile support */
+  }
+  
+  .hero-content {
+    min-height: 100vh;
+    padding-top: clamp(120px, 60vh, 400px); /* Reduced top padding for mobile */
+    padding-bottom: 15vh; /* More bottom padding for mobile reading */
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  .grid {
+    column-gap: 0; /* Remove grid gaps on mobile */
+  }
+  
+  .text-col { 
+    grid-column: 1 / -1; /* Full width on mobile */
+  }
+  
+  .lede-row {
+    flex-direction: column; /* Stack pill and text vertically */
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .lede {
+    max-width: none; /* Remove width constraint on mobile */
+    font-size: clamp(24px, 7vw, 36px); /* Smaller but readable font size */
+    line-height: 1.4; /* Better mobile line height */
+    text-transform: none; /* Remove uppercase for better mobile readability */
+  }
+  
+  .pill {
+    font-size: 14px;
+    padding: 8px 16px 10px;
+    align-self: flex-start;
+  }
+  
+  /* Contact band mobile optimizations */
+  .contact-band {
+    margin-top: 60px; /* Reduced margin on mobile */
+    padding: 20px 0 40px;
+  }
+  
+  .contact-band .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  .contact-band .hairline {
+    margin-left: 0; /* Left align hairline on mobile */
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    row-gap: 40px;
+    align-items: stretch;
+  }
+  
+  .portrait {
+    grid-column: 1;
+    text-align: center;
+  }
+  
+  .portrait img {
+    max-width: 200px;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .buttons {
+    grid-column: 1;
+    gap: 24px;
+  }
+  
+  .cta-pill {
+    --h: 80px;
+    padding: 0 24px;
+    border-radius: 40px;
+  }
+  
+  .cta-pill .label {
+    font-size: clamp(20px, 6vw, 28px);
+  }
+  
+  .cta-pill .arrow {
+    width: clamp(20px, 4vw, 24px);
+  }
+  
+  .band-footer {
+    margin-top: 60px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* ─── Small Mobile (480px and below) ─────────────────────────── */
+@media (max-width: 480px) {
+  .hero-content {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 20vh;
+  }
+  
+  .lede {
+    font-size: clamp(20px, 6vw, 28px);
+    line-height: 1.5;
+  }
+  
+  .pill {
+    font-size: 12px;
+    padding: 6px 14px 8px;
+  }
+  
+  .contact-band .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .contact-grid {
+    row-gap: 30px;
+  }
+  
+  .portrait img {
+    max-width: 160px;
+  }
+  
+  .cta-pill {
+    --h: 70px;
+    padding: 0 20px;
+    border-radius: 35px;
+  }
+  
+  .cta-pill .label {
+    font-size: clamp(18px, 5.5vw, 24px);
+  }
+  
+  .band-footer {
+    margin-top: 40px;
+    font-size: 11px;
+  }
+}
+
+/* ─── Mobile Performance Optimizations ──────────────────────── */
+@media (max-width: 768px) {
+  /* Reduce background image scale for mobile performance */
+  .bg {
+    transform: translateZ(0) scale(1.02); /* Less overscan on mobile */
+  }
+  
+  /* Simplify will-change properties on mobile */
+  .bg {
+    will-change: transform, opacity;
+  }
+  
+  /* Touch-friendly interactions */
+  .cta-pill {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  .cta-pill:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+/* ─── Text Selection Improvements ───────────────────────────── */
+@media (max-width: 768px) {
+  .lede {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  
+  /* Prevent zoom on input focus (if any inputs are added later) */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
 @media (max-width: 680px){
   .text-col{ grid-column: 1 / -1; }
   .lede{ max-width: 28ch; font-size: clamp(30px, 8vw, 44px); }
