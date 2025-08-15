@@ -248,7 +248,7 @@ export default {
     left: 16px;
     top: 16px; /* Start at same position as header logo for smooth animation */
     font-size: 22vw; /* Large initial size - will scale down with GSAP */
-    line-height: 0.82;
+    line-height: 1.82;
     font-weight: 900;
     letter-spacing: -0.04em;
   }
