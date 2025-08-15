@@ -7,8 +7,8 @@
         <!-- Hero image -->
         <img class="hero" src="/assets/images/hero-photo.png" alt="Hero image" data-reveal="wipe"/>
 
-        <!-- Big logo proxy: invisible, used to set the header-logo start pos/scale -->
-        <div class="hero-logo-proxy" aria-hidden="true">
+        <!-- Big logo proxy: invisible, used to set the header-logo start pos/scale (DESKTOP ONLY) -->
+        <div class="hero-logo-proxy desktop-only" aria-hidden="true">
           CHLOE<br/>MARIE
         </div>
 
@@ -35,9 +35,6 @@
           :tilt="circularTilt"
         />
       </section>
-
-      <!-- If you don't have this component, leave it commented -->
-      <!-- <FeaturedProject /> -->
     </div>
   </div>
 </template>
@@ -74,7 +71,8 @@ export default {
         { src: "/assets/circular/07.jpeg",  },
       ],
       // Responsive circular gallery settings
-      windowWidth: 0
+      windowWidth: 0,
+      isMobile: false
     };
   },
   computed: {
@@ -113,8 +111,14 @@ export default {
     }
   },
   mounted() {
-    this.initLogoDock();
     this.updateWindowWidth();
+    this.checkMobile();
+    
+    // Only run logo animation on DESKTOP
+    if (!this.isMobile) {
+      this.initLogoDock();
+    }
+    
     window.addEventListener("resize", this.handleResize, { passive: true });
   },
   beforeUnmount() {
@@ -122,22 +126,60 @@ export default {
     ScrollTrigger.getAll().forEach(t => t.kill());
   },
   methods: {
-    handleResize() {
-      this.refreshLogoDock();
-      this.updateWindowWidth();
+    checkMobile() {
+      this.isMobile = window.innerWidth <= 768;
     },
+    
+    handleResize() {
+      const wasMobile = this.isMobile;
+      this.updateWindowWidth();
+      this.checkMobile();
+      
+      // If switched from mobile to desktop, start animation
+      if (wasMobile && !this.isMobile) {
+        this.initLogoDock();
+      }
+      // If switched to mobile, kill animation and reset logo
+      else if (!wasMobile && this.isMobile) {
+        this.killLogoAnimation();
+      }
+      // If staying desktop, refresh animation
+      else if (!this.isMobile && this._recomputeLogo) {
+        this.refreshLogoDock();
+      }
+    },
+    
     updateWindowWidth() {
       this.windowWidth = window.innerWidth;
     },
-    // Animate the fixed .header-logo from the proxy's start rect -> its final rect
+    
+    killLogoAnimation() {
+      if (this._logoTL) {
+        this._logoTL.kill();
+        this._logoTL = null;
+      }
+      // Reset header logo to normal App.vue position
+      const headerLogo = document.querySelector(".header-logo");
+      if (headerLogo) {
+        gsap.set(headerLogo, { 
+          clearProps: "all",
+          force3D: false 
+        });
+      }
+    },
+    
+    // Animate the fixed .header-logo from the proxy's start rect -> its final rect (DESKTOP ONLY)
     initLogoDock() {
-      // Add a small delay to ensure App.vue header is rendered
+      if (this.isMobile) return; // Never run on mobile
+      
       setTimeout(() => {
         const headerLogo = document.querySelector(".header-logo");
         const proxy = document.querySelector(".hero-logo-proxy");
         if (!headerLogo || !proxy) return;
 
         const setup = () => {
+          if (this.isMobile) return; // Double-check
+          
           const hBox = headerLogo.getBoundingClientRect();
           const pBox = proxy.getBoundingClientRect();
 
@@ -158,8 +200,7 @@ export default {
             scale: scaleStart, 
             transformOrigin: "0 0",
             force3D: true,
-            backfaceVisibility: "hidden",
-            perspective: 1000
+            backfaceVisibility: "hidden"
           });
 
           // Kill previous timeline if any
@@ -170,7 +211,7 @@ export default {
             scrollTrigger: {
               trigger: document.body,
               start: "top top",
-              end: () => "+=" + Math.round(window.innerHeight * 3.5), // longer = slower shrink
+              end: () => "+=" + Math.round(window.innerHeight * 3.5),
               scrub: 1.1,
               invalidateOnRefresh: true
             }
@@ -187,10 +228,12 @@ export default {
 
         setup();
         this._recomputeLogo = setup;
-      }, 150); // Slightly longer delay for better reliability
+      }, 150);
     },
+    
     refreshLogoDock() {
-      if (this._recomputeLogo) this._recomputeLogo();
+      if (this.isMobile || !this._recomputeLogo) return;
+      this._recomputeLogo();
       ScrollTrigger.refresh();
     }
   }
@@ -198,7 +241,7 @@ export default {
 </script>
 
 <style scoped>
-/* Big hero logo proxy (invisible; only for measuring the start position/size) */
+/* Big hero logo proxy (invisible; only for measuring the start position/size) - DESKTOP ONLY */
 .hero-logo-proxy{
   position: absolute;
   left: -48px;
@@ -211,25 +254,6 @@ export default {
   font-size: 13.5vw;     /* initial huge size; tweak as needed */
   visibility: hidden;  /* keep hidden; header-logo is the visible one */
   pointer-events: none;
-}
-
-/* Mobile responsive proxy positioning */
-@media (max-width: 768px) {
-  .hero-logo-proxy {
-    left: -20px;
-    top: 100px; /* Start below the mobile header */
-    font-size: 20vw; /* Larger on mobile to match screenshots */
-    line-height: 0.8;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-logo-proxy {
-    left: -16px;
-    top: 90px;
-    font-size: 22vw; /* Even larger on small mobile */
-    line-height: 0.75;
-  }
 }
 
 /* Circular gallery section spacing */
@@ -245,6 +269,25 @@ export default {
 .footer-block-initial{ 
   z-index: 100; 
   position: relative; 
+}
+
+/* ─── Responsive Display Control ────────────────────────────── */
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+  
+  .mobile-only {
+    display: block;
+  }
 }
 
 /* ─── Mobile Responsive Styles ────────────────────────────────── */
@@ -284,11 +327,15 @@ export default {
   }
 }
 
-/* Mobile hero layout adjustments */
+/* Mobile hero layout - MATCH ORIGINAL LAYOUT */
 @media (max-width: 768px) {
   .index .hero {
-    margin-top: 200px; /* Account for large logo space + fixed header */
+    margin-top: 80px; /* Just header space - NO logo animation space needed */
     margin-bottom: 2rem;
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: cover;
   }
   
   .footer-block-initial {
@@ -298,8 +345,9 @@ export default {
 
 @media (max-width: 480px) {
   .index .hero {
-    margin-top: 180px; /* Adjusted for mobile logo size */
+    margin-top: 80px; /* Consistent - no animation on mobile */
     margin-bottom: 1.5rem;
+    max-height: 50vh;
   }
   
   .footer-block-initial {
@@ -336,7 +384,6 @@ export default {
 
 /* Improve performance on mobile */
 @media (max-width: 768px) {
-  .hero-logo-proxy,
   .index .hero,
   .footer-block-initial {
     will-change: auto;

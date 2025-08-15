@@ -356,13 +356,24 @@ export default {
 }
 
 
+/* Add this to your App.vue .header-logo styles */
 .header-logo {
+  /* ... your existing styles ... */
+  
+  /* ADD THESE for crisp rendering: */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  transform: translateZ(0); /* Force hardware acceleration */
   backface-visibility: hidden;
-  perspective: 1000px;
+}
+
+/* Add this media query to App.vue */
+@media (max-width: 768px) {
+  .header-logo {
+    /* Ensure no transforms on mobile for crispness */
+    transform: none !important;
+    will-change: auto;
+  }
 }
 
 /* Responsive Media Queries */
