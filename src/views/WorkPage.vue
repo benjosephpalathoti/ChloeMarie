@@ -237,13 +237,13 @@ onBeforeUnmount(() => {
   --card-w: 588px;
 
   /* 2) Lanes (desktop) – thinner and light grey */
-  --lane-w: clamp(160px, 14vw, 220px);  /* thinner space between the two lines */
+  --lane-w: clamp(120px, 10vw, 200px);  /* thinner space between the two lines */
   --lane-line: 1px;                     /* thin line */
   --lane-color: #e5e5e5;                /* light grey to match ref */
 
   /* 3) Vertical pill (desktop) – bigger + Oswald */
-  --pill-fs: clamp(13px, 1.05vw, 18px);
-  --pill-pad-block: 18px;               /* top/bottom padding inside vertical pill */
+  --pill-fs: clamp(16px, 1.3vw, 22px);
+  --pill-pad-block: 28px;               /* top/bottom padding inside vertical pill */
   --pill-pad-inline: 14px;              /* left/right padding inside vertical pill */
   --pill-bw: 2px;
   --pill-r: 999px;
@@ -294,8 +294,8 @@ onBeforeUnmount(() => {
   text-transform: uppercase; letter-spacing:.08em;
   z-index: 2;
 }
-.pre-pill .pill-label{ font-weight:900; }
-.pre-pill .pill-num{ opacity:.9; font-weight:700; }
+.pre-pill .pill-label{ font-weight:500; }
+.pre-pill .pill-num{ opacity:.9; font-weight:300; }
 
 /* ─── Your filmstrip cards ─── */
 .group{ min-width: calc(var(--card-w) * var(--cards)); }
