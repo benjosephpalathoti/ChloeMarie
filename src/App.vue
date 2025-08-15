@@ -361,7 +361,6 @@ export default {
   /* ... your existing styles ... */
   
   /* ADD THESE for crisp rendering: */
-  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   backface-visibility: hidden;
