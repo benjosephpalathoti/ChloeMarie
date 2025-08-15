@@ -65,8 +65,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 /* assets/links */
 const bgSrc     = "/assets/about/hero.jpg";   // update path as needed
-const instagram = "https://instagram.com/yourhandle";
-const email     = "mailto:hello@yourmail.com";
+
+const email     = "mailto:bentenneson8@gmail.com";
 
 /* refs */
 const hero = ref(null);
