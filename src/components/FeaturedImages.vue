@@ -144,7 +144,7 @@ export default {
   .featured-images-art {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: none;
-    gap: 30px 20px;
+    gap: 20px 16px;
     padding: 40px 16px;
   }
   
@@ -153,14 +153,14 @@ export default {
     grid-column: auto;
     grid-row: auto;
     width: 100%;
-    height: clamp(250px, 50vw, 350px);
+    height: clamp(280px, 60vw, 380px);
     max-width: none;
     min-width: none;
     max-height: none;
   }
   
   .featured-image img {
-    border-radius: 8px;
+    border-radius: 4px;
   }
   
   /* Hover effects for touch devices */
@@ -173,17 +173,17 @@ export default {
 @media (max-width: 480px) {
   .featured-images-art {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
     padding: 30px 12px;
   }
   
   .featured-image {
     width: 100%;
-    height: clamp(200px, 60vw, 300px);
+    height: clamp(300px, 70vw, 400px);
   }
   
   .featured-image img {
-    border-radius: 6px;
+    border-radius: 4px;
   }
 }
 

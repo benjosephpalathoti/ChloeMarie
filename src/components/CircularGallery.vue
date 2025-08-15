@@ -234,22 +234,7 @@ function styleFor(i) {
       </div>
     </div>
     
-    <!-- Mobile indicators -->
-    <div v-if="isMobile" class="mobile-indicators">
-      <button
-        v-for="(img, i) in images"
-        :key="`indicator-${i}`"
-        class="indicator"
-        :class="{ 'active': Math.abs(i - offset) < 0.5 }"
-        @click="focusIndex(i)"
-        :aria-label="`Go to image ${i + 1}`"
-      ></button>
-    </div>
-    
-    <!-- Mobile instruction text -->
-    <div v-if="isMobile" class="mobile-instruction">
-      Swipe to browse
-    </div>
+    <!-- Removed mobile indicators and instruction for cleaner look -->
   </div>
 </template>
 
@@ -328,9 +313,8 @@ function styleFor(i) {
 
 .rb-panel.mobile {
   margin: 20px auto 0;
-  box-shadow: 
-    inset 0 0 0 1px rgba(254, 254, 254, 0.04),
-    0 4px 20px rgba(0,0,0,0.1);
+  background: transparent; /* Remove box background on mobile */
+  box-shadow: none; /* Remove shadow on mobile */
 }
 
 .mobile .card {
@@ -343,44 +327,7 @@ function styleFor(i) {
   color: #333; /* Darker text for better mobile readability */
 }
 
-/* Mobile indicators */
-.mobile-indicators {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 1001;
-}
-
-.indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.3);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.indicator.active {
-  background: rgba(0,0,0,0.7);
-  transform: scale(1.2);
-}
-
-/* Mobile instruction */
-.mobile-instruction {
-  position: absolute;
-  bottom: -35px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  color: #666;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  letter-spacing: 0.02em;
-  opacity: 0.8;
-}
+/* Remove all mobile indicator styles since we removed them */
 
 /* ─── Touch Interactions ─────────────────────────────────────── */
 
