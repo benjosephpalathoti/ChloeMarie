@@ -213,8 +213,8 @@ export default {
 @media (max-width: 768px) {
   .hero-logo-proxy {
     left: 16px;
-    top: 80px; /* Position below mobile header */
-    font-size: 19vw; /* Larger mobile size to match target */
+    top: 16px; /* Start at same position as header logo for smooth animation */
+    font-size: 22vw; /* Large initial size - will scale down with GSAP */
     line-height: 0.82;
     font-weight: 900;
     letter-spacing: -0.04em;
@@ -227,13 +227,13 @@ export default {
     background: #fff;
   }
   
-  /* Hero image positioned to match target design */
+  /* Hero image positioned below the large animated text */
   .index .hero {
     position: relative;
-    margin-top: 60px; /* Account for fixed header */
+    margin-top: 35vh; /* Space for the large logo text */
     width: 100vw;
     max-width: 100vw;
-    height: 70vh; /* Taller hero on mobile */
+    height: 70vh;
     object-fit: cover;
     object-position: center;
     left: 0;
@@ -281,13 +281,13 @@ export default {
 @media (max-width: 480px) {
   .hero-logo-proxy {
     left: 12px;
-    top: 70px;
-    font-size: 21vw; /* Slightly larger on smallest screens */
+    top: 15px; /* Same as header logo position */
+    font-size: 24vw; /* Even larger on smallest screens */
     line-height: 0.8;
   }
   
   .index .hero {
-    margin-top: 60px;
+    margin-top: 38vh; /* Adjusted space for larger text */
     height: 65vh;
   }
   

@@ -368,22 +368,20 @@ export default {
   .desktop-menu { display: none; }
   .mobile-menu-toggle { display: flex; }
   
-  /* Mobile header styling to match target design */
+  /* Keep header transparent on mobile like desktop */
   .global-header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: transparent;
     height: 60px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
   
-  /* Adjust header logo for mobile - matching target design */
+  /* Adjust header logo for mobile - final small size after scroll */
   .header-logo {
-    font-size: 22px;
+    font-size: 24px; /* Final size after animation */
     left: 16px;
-    top: 18px;
-    line-height: 0.85;
+    top: 16px;
+    line-height: 0.82;
     font-weight: 900;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
   }
   
   /* Hide header infos on mobile */
@@ -394,20 +392,23 @@ export default {
   /* Mobile menu button styling to match target */
   .mobile-menu-toggle {
     right: 16px;
-    top: 18px;
-    font-size: 13px;
+    top: 16px;
+    font-size: 14px;
     font-weight: 700;
-    letter-spacing: 0.05em;
-    gap: 6px;
+    letter-spacing: 0.04em;
+    gap: 8px;
   }
   
   .menu-text {
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .menu-icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   /* Mobile menu adjustments */
@@ -422,20 +423,20 @@ export default {
 
 @media (max-width: 480px) {
   .header-logo {
-    font-size: 20px;
+    font-size: 22px; /* Final size after animation */
     left: 12px;
-    top: 17px;
+    top: 15px;
   }
   
   .mobile-menu-toggle {
     right: 12px;
-    top: 17px;
-    font-size: 12px;
+    top: 15px;
+    font-size: 13px;
   }
   
   .menu-icon {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
   
   .mobile-menu-list li a {
