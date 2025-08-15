@@ -142,6 +142,9 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  backface-visibility: hidden; /* Prevent flickering */
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0); /* Force GPU acceleration */
 }
 
 /* Header infos grid (unchanged from your version, trimmed) */

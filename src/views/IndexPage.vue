@@ -136,6 +136,7 @@ export default {
       if (!headerLogo || !proxy) return;
 
       const setup = () => {
+        const isMobile = window.innerWidth <= 768;
         const hBox = headerLogo.getBoundingClientRect();
         const pBox = proxy.getBoundingClientRect();
 
@@ -143,26 +144,48 @@ export default {
         const pSize = parseFloat(getComputedStyle(proxy).fontSize);
         const scaleStart = pSize / hSize;
 
-        const dx = pBox.left - hBox.left;
-        const dy = pBox.top  - hBox.top;
+        // On mobile, we only need to scale, not translate
+        if (isMobile) {
+          // Mobile: only scale animation, no position change
+          gsap.set(headerLogo, { 
+            scale: scaleStart, 
+            transformOrigin: "left top",
+            force3D: true // Enable GPU acceleration
+          });
 
-        // Start the header logo visually over the proxy
-        gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0" });
+          // Kill previous timeline if any
+          if (this._logoTL) this._logoTL.kill();
 
-        // Kill previous timeline if any
-        if (this._logoTL) this._logoTL.kill();
+          this._logoTL = gsap.timeline({
+            scrollTrigger: {
+              trigger: document.body,
+              start: "top top",
+              end: () => "+=" + Math.round(window.innerHeight * 1.5), // Faster on mobile
+              scrub: 0.8,
+              invalidateOnRefresh: true
+            }
+          })
+          .to(headerLogo, { scale: 1, ease: "power2.out" }, 0);
+        } else {
+          // Desktop: original animation with position and scale
+          const dx = pBox.left - hBox.left;
+          const dy = pBox.top  - hBox.top;
 
-        // Scrub to neutral (x:0,y:0, scale:1)
-        this._logoTL = gsap.timeline({
-          scrollTrigger: {
-            trigger: document.body,
-            start: "top top",
-            end: () => "+=" + Math.round(window.innerHeight * 3.5), // longer = slower shrink
-            scrub: 1.1,
-            invalidateOnRefresh: true
-          }
-        })
-        .to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
+          gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0" });
+
+          if (this._logoTL) this._logoTL.kill();
+
+          this._logoTL = gsap.timeline({
+            scrollTrigger: {
+              trigger: document.body,
+              start: "top top",
+              end: () => "+=" + Math.round(window.innerHeight * 3.5),
+              scrub: 1.1,
+              invalidateOnRefresh: true
+            }
+          })
+          .to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
+        }
       };
 
       setup();
