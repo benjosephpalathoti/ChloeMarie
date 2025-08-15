@@ -172,14 +172,16 @@ export default {
 /* ─── Small Mobile (up to 480px) ─────────────────────────────── */
 @media (max-width: 480px) {
   .featured-images-art {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
     padding: 30px 12px;
   }
   
   .featured-image {
-    width: 100%;
-    height: clamp(300px, 70vw, 400px);
+    width: 100% !important;
+    height: clamp(300px, 70vw, 400px) !important;
+    grid-column: 1 !important; /* Force single column */
+    grid-row: auto !important; /* Auto row placement */
   }
   
   .featured-image img {
@@ -237,7 +239,9 @@ export default {
     height: clamp(240px, 55vw, 400px) !important;     
     max-width: 500px;     
     min-width: auto;     
-    max-height: none;   
+    max-height: none;
+    grid-column: 1 !important; /* Force single column */
+    grid-row: auto !important; /* Auto row placement */
   }   
   
   .featured-image img {     
