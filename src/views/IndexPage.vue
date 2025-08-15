@@ -137,48 +137,44 @@ export default {
 
       const setup = () => {
         const isMobile = window.innerWidth <= 768;
-        
+        const hBox = headerLogo.getBoundingClientRect();
+        const pBox = proxy.getBoundingClientRect();
+
+        const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
+        const pSize = parseFloat(getComputedStyle(proxy).fontSize);
+        const scaleStart = pSize / hSize;
+
         if (isMobile) {
-          // Mobile: Use scale3d for better rendering
-          const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
-          const targetScale = (window.innerWidth * 0.22) / hSize; // 22vw equivalent
-          
-          // Set initial state with scale3d for GPU optimization
+          // Mobile: Scale animation without position change
+          // Start the logo at large size
           gsap.set(headerLogo, { 
-            scale3d: [targetScale, targetScale, 1],
+            scale: scaleStart,
             transformOrigin: "left top",
             force3D: true,
-            rotationZ: 0.01 // Hack to force GPU layer
+            z: 0.01 // Force GPU layer
           });
 
           // Kill previous timeline if any
           if (this._logoTL) this._logoTL.kill();
 
-          // Create smooth scaling animation
+          // Animate scale from large to small
           this._logoTL = gsap.timeline({
             scrollTrigger: {
               trigger: document.body,
               start: "top top",
-              end: () => "+=" + Math.round(window.innerHeight * 2), // Adjust for smooth scroll
+              end: () => "+=" + Math.round(window.innerHeight * 2), // 2x viewport height for smooth animation
               scrub: 0.5,
               invalidateOnRefresh: true
             }
           })
           .to(headerLogo, { 
-            scale3d: [1, 1, 1],
-            ease: "power1.out",
+            scale: 1,
+            ease: "power2.out",
             duration: 1
           }, 0);
           
         } else {
           // Desktop: original animation with position and scale
-          const hBox = headerLogo.getBoundingClientRect();
-          const pBox = proxy.getBoundingClientRect();
-
-          const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
-          const pSize = parseFloat(getComputedStyle(proxy).fontSize);
-          const scaleStart = pSize / hSize;
-
           const dx = pBox.left - hBox.left;
           const dy = pBox.top  - hBox.top;
 
