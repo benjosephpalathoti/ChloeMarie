@@ -1,62 +1,65 @@
 <template>
   <main class="work-page">
-    <!-- DESKTOP -->
+    <!-- DESKTOP / TABLET (landscape) -->
     <section class="pin container-1440 desktop-only" ref="pinEl">
       <div class="track" ref="trackEl">
-        <!-- Left: big title -->
-        <div class="intro-col" ref="introEl">
-          <h1 class="allworks">ALL<br />WORKS</h1>
+        <!-- LEFT: big title -->
+        <div class="panel intro" ref="introEl">
+          <h1 class="allworks" data-reveal="wipe">ALL<br />WORKS</h1>
         </div>
 
-        <!-- Right: three framed strips -->
-        <div class="strips-col" ref="stripsEl">
-          <div class="strip" v-for="(sec,i) in sections" :key="sec.key">
-            <div class="strip-frame">
-              <!-- attached vertical pill -->
-              <div class="strip-label">
-                <span class="label">{{ sec.title }}</span>
-                <span class="num">{{ String(i+1).padStart(2,'0') }}</span>
-              </div>
+        <!-- For each section: 1) LANE (two vertical lines + vertical pill)  2) your existing image group -->
+        <template v-for="(sec,i) in sections" :key="sec.key">
+          <!-- lane -->
+          <div class="panel pre-rails">
+            <span class="pre-pill">
+              <span class="pill-label">{{ sec.title }}</span>
+              <span class="pill-num">{{ String(i+1).padStart(2,'0') }}</span>
+            </span>
+          </div>
 
-              <!-- viewport (fixed frame) -->
-              <div class="strip-viewport">
-                <!-- inner rail that slides -->
-                <div class="strip-track" :ref="el => (stripTracks[i] = el)">
-                  <img
-                    v-for="(img,j) in sec.images"
-                    :key="j"
-                    :src="img.src"
-                    :alt="img.alt || `${sec.title} ${j+1}`"
-                    loading="lazy"
-                    decoding="async"
-                    @load="onAssetLoad"
-                    @click="goSeries(sec.key, j)"
-                  />
-                </div>
-              </div>
+          <!-- image group (unchanged behavior) -->
+          <div class="panel group" :style="{ '--cards': sec.images.length }">
+            <div class="cards">
+              <article class="card" v-for="(img,j) in sec.images" :key="j">
+                <img
+                  :src="img.src"
+                  :alt="img.alt || `${sec.title} ${j+1}`"
+                  loading="lazy"
+                  decoding="async"
+                  @load="onAssetLoad"
+                  @click="goSeries(sec.key, j)"
+                  style="cursor:pointer"
+                />
+                <h2 v-if="j === 0" class="card-title">{{ sec.title }}</h2>
+              </article>
             </div>
           </div>
-        </div>
+        </template>
 
-        <!-- tiny spacer so the last pixels don't get clipped -->
         <div class="tail" aria-hidden="true"></div>
       </div>
     </section>
 
-    <!-- MOBILE -->
+    <!-- MOBILE / SMALL TABLET -->
     <section class="mobile-only mobile-work-layout">
       <div class="mobile-work-header">
         <h1 class="mobile-allworks">ALL<br />WORKS</h1>
       </div>
 
       <div class="mobile-categories">
-        <div class="mo-cat" v-for="(sec,i) in sections" :key="sec.key">
-          <button class="mo-bar" @click="openIndex = openIndex === i ? -1 : i">
-            <span class="pill">{{ sec.title }}</span>
-            <span class="num">{{ String(i+1).padStart(2,'0') }}</span>
-            <svg class="chev" viewBox="0 0 24 24" :class="{ open: openIndex===i }"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <div class="mo-lane" v-for="(sec,i) in sections" :key="sec.key">
+          <!-- horizontal pill sitting inside a vertical lane -->
+          <button class="mo-pill" @click="openIndex = openIndex === i ? -1 : i">
+            <span class="mo-label">{{ sec.title }}</span>
+            <span class="mo-dot"></span>
+            <span class="mo-num">{{ String(i+1).padStart(2,'0') }}</span>
+            <svg class="mo-chev" viewBox="0 0 24 24" :class="{ open: openIndex===i }">
+              <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
           </button>
 
+          <!-- horizontally swipeable ribbon, page scroll remains vertical -->
           <div v-if="openIndex===i" class="mo-frame">
             <div class="mo-scroll">
               <img
@@ -83,7 +86,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useRouter } from 'vue-router'
 gsap.registerPlugin(ScrollTrigger)
 
-/* === DATA (unchanged) === */
+/* === DATA === */
 const router = useRouter()
 function goSeries(sectionKey, index){
   const key = String(sectionKey).toLowerCase()
@@ -93,63 +96,83 @@ function goSeries(sectionKey, index){
 }
 
 const sections = ref([
-  { key:'CERAMICS', title:'CERAMICS', images:[
-    { src:'/assets/works/ceramics/01.png' }, { src:'/assets/works/ceramics/02.png' },
-    { src:'/assets/works/ceramics/03.png' }, { src:'/assets/works/ceramics/04.png' },
-    { src:'/assets/works/ceramics/05.png' }, { src:'/assets/works/ceramics/06.jpeg' },
-    { src:'/assets/works/ceramics/07.jpg' }, { src:'/assets/works/ceramics/08.jpg' },
-  ]},
-  { key:'DRAWING', title:'DRAWINGS', images:[
-    { src:'/assets/works/drawing/01.png' }, { src:'/assets/works/drawing/02.png' },
-    { src:'/assets/works/drawing/03.png' }, { src:'/assets/works/drawing/04.png' },
-    { src:'/assets/works/drawing/05.png' }, { src:'/assets/works/drawing/06.png' },
-    { src:'/assets/works/drawing/07.png' }, { src:'/assets/works/drawing/08.png' },
-    { src:'/assets/works/drawing/09.jpg' },
-  ]},
-  { key:'DESIGNS', title:'DESIGNS', images:[
-    { src:'/assets/works/designs/01.png' }, { src:'/assets/works/designs/02.png' },
-    { src:'/assets/works/designs/03.jpg' }, { src:'/assets/works/designs/04.jpg' },
-    { src:'/assets/works/designs/05.jpg' },
-  ]},
+  {
+    key: 'CERAMICS', title: 'CERAMICS',
+    images: [
+      { src: '/assets/works/ceramics/01.png' },
+      { src: '/assets/works/ceramics/02.png' },
+      { src: '/assets/works/ceramics/03.png' },
+      { src: '/assets/works/ceramics/04.png' },
+      { src: '/assets/works/ceramics/05.png' },
+      { src: '/assets/works/ceramics/06.jpeg' },
+      { src: '/assets/works/ceramics/07.jpg' },
+      { src: '/assets/works/ceramics/08.jpg' },
+    ],
+  },
+  {
+    key: 'DRAWING', title: 'DRAWINGS',
+    images: [
+      { src: '/assets/works/drawing/01.png' },
+      { src: '/assets/works/drawing/02.png' },
+      { src: '/assets/works/drawing/03.png' },
+      { src: '/assets/works/drawing/04.png' },
+      { src: '/assets/works/drawing/05.png' },
+      { src: '/assets/works/drawing/06.png' },
+      { src: '/assets/works/drawing/07.png' },
+      { src: '/assets/works/drawing/08.png' },
+      { src: '/assets/works/drawing/09.jpg' },
+    ],
+  },
+  {
+    key: 'DESIGNS', title: 'DESIGNS',
+    images: [
+      { src: '/assets/works/designs/01.png' },
+      { src: '/assets/works/designs/02.png' },
+      { src: '/assets/works/designs/03.jpg' },
+      { src: '/assets/works/designs/04.jpg' },
+      { src: '/assets/works/designs/05.jpg' },
+    ],
+  },
 ])
 
-/* === DESKTOP REFS / STATE === */
+/* === DESKTOP REFS & STATE === */
 const pinEl = ref(null)
 const trackEl = ref(null)
 const introEl = ref(null)
-const stripsEl = ref(null)
-const stripTracks = ref([])
+const activeIndex = ref(0)
 
 let st = null
 let anim = null
-let stripTweens = []
 let resizeRaf = 0
 let imgCount = 0
+let sectionStarts = []
 
-function compute(){
-  const vp = pinEl.value
-  const tr = trackEl.value
+function compute() {
+  const vp = pinEl.value, tr = trackEl.value
   if (!vp || !tr) return { endX: 0 }
-  const raw = tr.scrollWidth - vp.clientWidth
-  const endX = Math.max(0, Math.ceil(raw) + 24)
+
+  // walk every child panel in order; mark the x where each .group begins
+  sectionStarts = []
+  let sum = 0
+  const kids = Array.from(tr.children).filter(el => !el.classList.contains('tail'))
+  kids.forEach(el => {
+    if (el.classList.contains('group')) sectionStarts.push(sum) // jump to real section, not the lane
+    sum += el.getBoundingClientRect().width
+  })
+
+  const endX = Math.max(0, Math.ceil(sum - vp.clientWidth) + 24)
   return { endX }
 }
 
-function setup(){
+function setup() {
   if (window.innerWidth <= 768) return
   const tr = trackEl.value
   if (!tr) return
 
-  // kill old
-  stripTweens.forEach(t => t.kill()); stripTweens = []
   anim?.kill(); st?.kill()
   ScrollTrigger.getAll().forEach(t => t.vars?.containerAnimation && t.kill())
 
-  // main horizontal pan (intro -> strips)
-  anim = gsap.to(tr, {
-    x: () => -compute().endX,
-    ease: 'none',
-  })
+  anim = gsap.to(tr, { x: () => -compute().endX, ease: 'none' })
 
   st = ScrollTrigger.create({
     trigger: pinEl.value,
@@ -162,49 +185,48 @@ function setup(){
     invalidateOnRefresh: true,
   })
 
-  // each strip's inner rail slides inside its frame
-  stripTracks.value.forEach((el) => {
-    if (!el) return
-    const vp = el.parentElement // .strip-viewport
-    const getX = () => -(el.scrollWidth - vp.clientWidth)
-
-    const t = gsap.to(el, {
-      x: getX,
-      ease: 'none',
-      scrollTrigger: {
-        containerAnimation: anim,
-        trigger: stripsEl.value,
-        start: 'left left',
-        end: 'right right',
-        scrub: 1,
-        invalidateOnRefresh: true,
-      }
+  // keep your active section detection on each .group
+  const groups = Array.from(tr.querySelectorAll('.group'))
+  groups.forEach((el, i) => {
+    ScrollTrigger.create({
+      containerAnimation: anim,
+      trigger: el,
+      start: 'left center',
+      end: 'right center',
+      onToggle: s => s.isActive && (activeIndex.value = i),
     })
-    stripTweens.push(t)
   })
 }
 
-function onAssetLoad(){
+function onAssetLoad() {
   if (window.innerWidth <= 768) return
   imgCount++
-  if (imgCount === 1 || imgCount % 2 === 0){
+  if (imgCount === 1 || imgCount % 2 === 0) {
     ScrollTrigger.refresh()
     setup()
   }
 }
 
-function onResize(){
+function onResize() {
   cancelAnimationFrame(resizeRaf)
   resizeRaf = requestAnimationFrame(() => {
-    if (window.innerWidth > 768){
+    if (window.innerWidth > 768) {
       ScrollTrigger.refresh()
       setup()
     } else {
       st?.kill(); anim?.kill()
-      stripTweens.forEach(t => t.kill()); stripTweens = []
       ScrollTrigger.getAll().forEach(t => t.kill())
     }
   })
+}
+
+function scrollToSection(i) {
+  if (!st || window.innerWidth <= 768) return
+  const { endX } = compute()
+  const targetX = sectionStarts[i] || 0
+  const progress = endX ? targetX / endX : 0
+  const y = st.start + progress * (st.end - st.start)
+  window.scrollTo({ top: y, behavior: 'smooth' })
 }
 
 /* === MOBILE STATE === */
@@ -219,141 +241,169 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
   st?.kill(); anim?.kill()
-  stripTweens.forEach(t => t.kill())
   ScrollTrigger.getAll().forEach(t => t.kill())
 })
 </script>
 
 <style scoped>
 .work-page{
-  /* sizing knobs to tweak the look */
-  --strip-h: min(86vh, 900px);
-  --strip-w: clamp(280px, 22vw, 420px);
-  --strip-gap: 28px;
-  --frame-r: 28px;
-  --frame-bw: 2px;
-  --intro-w: clamp(520px, 48vw, 760px);
+  /* shared sizing knobs */
+  --header-h: 80px;
+  --card-w: 588px;
+  --card-h: 742px;
+
+  --allworks-size: clamp(160px, 23vw, 140px);
+  --title-size: clamp(56px, 6.4vw, 96px);
+
+  /* lane (desktop) */
+  --lane-w: clamp(260px, 20vw, 380px);
+  --lane-line: 2px;
+  --lane-color: #111;
+
+  /* pill (desktop) */
+  --pill-bw: 2px;
+  --pill-r: 999px;
 
   background:#fff; color:#000;
 }
 
-/* --- DESKTOP --- */
+/* ─── Desktop Layout ─────────────────────────────────────────── */
+
 .container-1440{ width:100vw; margin:0; padding:0; box-sizing:border-box; }
-.pin{ position:relative; height:var(--strip-h); overflow:hidden; }
+.pin{ position:relative; height:var(--card-h); overflow:hidden; }
 
 .track{
-  position:absolute; inset:auto auto 0 0;
-  display:flex; align-items:flex-end; gap:48px;
-  height:var(--strip-h);
-  will-change: transform;
+  position:absolute; top:0; left:0; height:var(--card-h);
+  display:inline-flex; gap:0; will-change:transform; transform:translateZ(0);
 }
+.tail{ flex:0 0 24px; width:24px; }
 
-/* left column */
-.intro-col{
-  min-width: var(--intro-w);
-  height: 100%;
+.panel{ position:relative; height:var(--card-h); }
+
+/* intro column (left) */
+.intro{
+  min-width: calc(var(--card-w) + 550px);     /* push first rail to the right */
   display:flex; align-items:flex-end;
-  padding-left: 12px;
 }
 .allworks{
   font-family:'Oswald', Arial, sans-serif; font-weight:900;
   font-size: clamp(120px, 20vw, 180px);
-  line-height:.84; letter-spacing:-.02em; margin:0 0 8px 0;
+  line-height:.84; letter-spacing:-.02em; margin:0 0 8px 12px;
 }
 
-/* right column with 3 strips */
-.strips-col{
-  height: 100%;
-  display:flex;
-  gap: var(--strip-gap);
-  min-width: calc(3 * var(--strip-w) + 2 * var(--strip-gap));
-  padding-right: 12px;
+/* lane with two vertical lines and a vertical pill */
+.pre-rails{
+  min-width: var(--lane-w);
+  height: var(--card-h);
+  position: relative;
+  pointer-events: none;
 }
-
-/* strip frame */
-.strip{ height:100%; width:var(--strip-w); }
-.strip-frame{
-  position:relative;
-  height:100%; width:100%;
-  border: var(--frame-bw) solid #000;
-  border-radius: var(--frame-r);
-  overflow: hidden;
-  background:#fff;
+.pre-rails::before,
+.pre-rails::after{
+  content:"";
+  position:absolute; top:0; bottom:0;
+  width: var(--lane-line);
+  background: var(--lane-color);
 }
+.pre-rails::before{ left:0; }
+.pre-rails::after{ right:0; }
 
-/* vertical pill attached inside frame */
-.strip-label{
-  position:absolute; left:8px; bottom:8px;
-  display:flex; flex-direction:column; align-items:center; gap:8px;
-  background:#fff; color:#000;
-  border: var(--frame-bw) solid #000; border-radius:999px;
-  padding:12px 10px 16px;
+/* attached vertical pill */
+.pre-pill{
+  position:absolute; left: 8px; bottom: 10px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  background:#fff; color:#000; border: var(--pill-bw) solid #000;
+  border-radius: var(--pill-r);
+  padding: 12px 10px 16px;
   writing-mode: vertical-rl; transform: rotate(180deg);
-  z-index: 2;
-  text-transform: uppercase; letter-spacing:.08em; font-size:12px;
+  text-transform: uppercase; letter-spacing:.08em; font-size:12px; line-height:1;
+  pointer-events: auto; z-index: 2;
 }
-.strip-label .label{ font-weight:700; }
-.strip-label .num{ opacity:.6; font-weight:600; }
+.pre-pill .pill-label{ font-weight: 800; }
+.pre-pill .pill-num{ opacity:.6; font-weight:600; }
 
-/* viewport stays fixed; inner track slides */
-.strip-viewport{ position:relative; height:100%; width:100%; overflow:hidden; }
-.strip-track{
-  position:absolute; inset:0 auto 0 0;
-  display:flex; gap:0; will-change:transform;
-}
-.strip-track img{
-  width: var(--strip-w);
-  height: 100%;
-  object-fit: cover;
-  display:block;
-  cursor:pointer;
+/* groups: your original filmstrip */
+.group{ min-width: calc(var(--card-w) * var(--cards)); }
+.cards{ height:100%; display:flex; gap:0; }
+.card{ position:relative; flex:0 0 var(--card-w); width:var(--card-w); height:var(--card-h); overflow:hidden; }
+.card + .card{ margin-left:-1px; } /* hide seam */
+.card img{ width:100%; height:100%; object-fit: cover; object-position:center; display:block; transform:translateZ(0); }
+
+.card-title{
+  position:absolute; left:24px; bottom:22px;
+  font-family:'Oswald', Arial, sans-serif; font-weight:900; text-transform:uppercase;
+  letter-spacing:.02em; font-size: var(--title-size); line-height:.95;
+  color:#fff; text-shadow:0 6px 24px rgba(0,0,0,.35);
 }
 
-/* spacer */
-.tail{ flex:0 0 24px; width:24px; }
+/* ─── Mobile Layout ─────────────────────────────────────────── */
 
-/* --- MOBILE --- */
-.mobile-work-layout{
-  padding-top: 96px; padding-bottom: 48px;
+.mobile-work-layout {
+  padding-top: 96px; padding-bottom: 48px; min-height: 100vh;
 }
-.mobile-work-header{ padding: 0 16px 32px; }
+
+.mobile-work-header { padding: 0 16px 32px; }
 .mobile-allworks{
-  font-family:'Oswald', Arial, sans-serif;
-  font-weight:900; font-size: 18vw; line-height:.84; letter-spacing:-.02em; margin:0;
+  font-family: 'Oswald', Arial, sans-serif; font-weight: 900;
+  font-size: 18vw; line-height: .84; letter-spacing: -0.02em; margin: 0;
 }
 
-.mobile-categories{ padding:0 0; }
-.mo-cat{ margin: 0 0 24px; }
-
-.mo-bar{
-  width:100%; display:flex; align-items:center; justify-content:space-between;
-  border:2px solid #000; border-radius: 999px;
-  padding: 14px 16px; background:#fff; color:#000;
-  text-transform: uppercase; letter-spacing:.06em;
+/* vertical lane with two lines; horizontal pill inside */
+.mobile-categories{ padding: 0 12px; display:grid; gap: 24px; }
+.mo-lane{
+  position: relative; padding: 56px 0 12px; /* top room for pill */
+  min-height: 64px;
 }
-.mo-bar .pill{ font-family:'Oswald', Arial, sans-serif; font-weight:700; }
-.mo-bar .num{ opacity:.6; }
-.mo-bar .chev{ width:22px; height:22px; transition: transform .2s ease; }
-.mo-bar .chev.open{ transform: rotate(180deg); }
+.mo-lane::before,
+.mo-lane::after{
+  content:"";
+  position:absolute; top:0; bottom:0;
+  width: 2px; background: #111;
+}
+.mo-lane::before{ left: 6px; }
+.mo-lane::after{ right: 6px; }
 
+/* horizontal pill button */
+.mo-pill{
+  position:absolute; top: 8px; left: 50%;
+  transform: translateX(-50%);
+  display:flex; align-items:center; gap:10px;
+  padding: 10px 14px;
+  background:#fff; color:#000; border:2px solid #000; border-radius: 999px;
+  text-transform: uppercase; letter-spacing:.06em; font-weight:700;
+}
+.mo-label{ font-family:'Oswald', Arial, sans-serif; font-weight:700; }
+.mo-num{ opacity:.6; font-weight:600; }
+.mo-dot{ width:6px; height:6px; border-radius:50%; background:#000; }
+.mo-chev{ width:18px; height:18px; transition: transform .2s ease; }
+.mo-chev.open{ transform: rotate(180deg); }
+
+/* frame + horizontal ribbon */
 .mo-frame{
-  border:2px solid #000; border-radius: 24px;
-  margin-top: 12px; overflow:hidden; background:#fff;
+  border:2px solid #000; border-radius: 18px;
+  overflow:hidden; background:#fff;
 }
 .mo-scroll{
-  display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
+  display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling: touch;
 }
 .mo-scroll img{
   width: 100%; height: auto; flex: 0 0 100%;
-  scroll-snap-align: start; display:block; object-fit: cover;
+  display:block; object-fit: cover; scroll-snap-align: start;
 }
 
-/* display toggles */
+/* ─── Display toggles ───────────────────────────────────────── */
+
 .desktop-only{ display:block; }
 .mobile-only{ display:none; }
 
 @media (max-width: 768px){
   .desktop-only{ display:none; }
   .mobile-only{ display:block; }
+}
+
+/* keep fixed card box on mid screens too */
+@media (max-width:1200px) and (min-width: 769px) {
+  .pin{ height:var(--card-h); }
+  .card{ width:var(--card-w); height:var(--card-h); }
 }
 </style>
