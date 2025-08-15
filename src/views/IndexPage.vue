@@ -12,6 +12,11 @@
           CHLOE<br/>MARIE
         </div>
 
+        <!-- Mobile large logo (visible on mobile, fades out on scroll) -->
+        <div class="mobile-hero-logo" v-if="windowWidth <= 768" aria-hidden="true">
+          CHLOE<br/>MARIE
+        </div>
+
         <!-- Small photo/copyright -->
         <div class="footer-block-initial" data-reveal="wipe">
           <img src="/assets/images/small-photo.jpg" alt="Portrait" />
@@ -137,21 +142,15 @@ export default {
 
       const setup = () => {
         const isMobile = window.innerWidth <= 768;
-        const hBox = headerLogo.getBoundingClientRect();
-        const pBox = proxy.getBoundingClientRect();
-
-        const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
-        const pSize = parseFloat(getComputedStyle(proxy).fontSize);
-        const scaleStart = pSize / hSize;
-
-        // On mobile, we only need to scale, not translate
+        
         if (isMobile) {
-          // Mobile: only scale animation, no position change
-          gsap.set(headerLogo, { 
-            scale: scaleStart, 
-            transformOrigin: "left top",
-            force3D: true // Enable GPU acceleration
-          });
+          // Mobile: Fade between two elements instead of scaling
+          const mobileLogo = document.querySelector(".mobile-hero-logo");
+          if (!mobileLogo) return;
+          
+          // Start with header logo hidden
+          gsap.set(headerLogo, { opacity: 0 });
+          gsap.set(mobileLogo, { opacity: 1 });
 
           // Kill previous timeline if any
           if (this._logoTL) this._logoTL.kill();
@@ -160,18 +159,30 @@ export default {
             scrollTrigger: {
               trigger: document.body,
               start: "top top",
-              end: () => "+=" + Math.round(window.innerHeight * 1.5), // Faster on mobile
-              scrub: 0.8,
-              invalidateOnRefresh: true
+              end: () => "+=" + Math.round(window.innerHeight * 0.5), // Quick transition
+              scrub: 0.3,
+              invalidateOnRefresh: true,
+              onUpdate: (self) => {
+                const progress = self.progress;
+                // Fade out mobile logo, fade in header logo
+                gsap.set(mobileLogo, { opacity: 1 - progress });
+                gsap.set(headerLogo, { opacity: progress });
+              }
             }
-          })
-          .to(headerLogo, { scale: 1, ease: "power2.out" }, 0);
+          });
         } else {
           // Desktop: original animation with position and scale
+          const hBox = headerLogo.getBoundingClientRect();
+          const pBox = proxy.getBoundingClientRect();
+
+          const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
+          const pSize = parseFloat(getComputedStyle(proxy).fontSize);
+          const scaleStart = pSize / hSize;
+
           const dx = pBox.left - hBox.left;
           const dy = pBox.top  - hBox.top;
 
-          gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0" });
+          gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0", opacity: 1 });
 
           if (this._logoTL) this._logoTL.kill();
 
@@ -213,6 +224,26 @@ export default {
   font-size: 13.5vw;     /* initial huge size; tweak as needed */
   visibility: hidden;  /* keep hidden; header-logo is the visible one */
   pointer-events: none;
+}
+
+/* Mobile hero logo - visible large text that fades out */
+.mobile-hero-logo {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  font-family: 'Oswald', Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  font-size: 22vw;
+  color: #000;
+  pointer-events: none;
+  z-index: 999;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  will-change: opacity;
 }
 
 /* Circular gallery section spacing */
@@ -307,6 +338,11 @@ export default {
     top: 15px; /* Same as header logo position */
     font-size: 24vw; /* Even larger on smallest screens */
     line-height: 0.8;
+  }
+  
+  .mobile-hero-logo {
+    left: 12px;
+    font-size: 24vw;
   }
   
   .index .hero {
