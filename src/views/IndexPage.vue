@@ -136,7 +136,6 @@ export default {
       if (!headerLogo || !proxy) return;
 
       const setup = () => {
-        const isMobile = window.innerWidth <= 768;
         const hBox = headerLogo.getBoundingClientRect();
         const pBox = proxy.getBoundingClientRect();
 
@@ -144,55 +143,26 @@ export default {
         const pSize = parseFloat(getComputedStyle(proxy).fontSize);
         const scaleStart = pSize / hSize;
 
-        if (isMobile) {
-          // Mobile: Scale animation without position change
-          // Start the logo at large size
-          gsap.set(headerLogo, { 
-            scale: scaleStart,
-            transformOrigin: "left top",
-            force3D: true,
-            z: 0.01 // Force GPU layer
-          });
+        const dx = pBox.left - hBox.left;
+        const dy = pBox.top  - hBox.top;
 
-          // Kill previous timeline if any
-          if (this._logoTL) this._logoTL.kill();
+        // Start the header logo visually over the proxy
+        gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0" });
 
-          // Animate scale from large to small
-          this._logoTL = gsap.timeline({
-            scrollTrigger: {
-              trigger: document.body,
-              start: "top top",
-              end: () => "+=" + Math.round(window.innerHeight * 2), // 2x viewport height for smooth animation
-              scrub: 0.5,
-              invalidateOnRefresh: true
-            }
-          })
-          .to(headerLogo, { 
-            scale: 1,
-            ease: "power2.out",
-            duration: 1
-          }, 0);
-          
-        } else {
-          // Desktop: original animation with position and scale
-          const dx = pBox.left - hBox.left;
-          const dy = pBox.top  - hBox.top;
+        // Kill previous timeline if any
+        if (this._logoTL) this._logoTL.kill();
 
-          gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0" });
-
-          if (this._logoTL) this._logoTL.kill();
-
-          this._logoTL = gsap.timeline({
-            scrollTrigger: {
-              trigger: document.body,
-              start: "top top",
-              end: () => "+=" + Math.round(window.innerHeight * 3.5),
-              scrub: 1.1,
-              invalidateOnRefresh: true
-            }
-          })
-          .to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
-        }
+        // Scrub to neutral (x:0,y:0, scale:1)
+        this._logoTL = gsap.timeline({
+          scrollTrigger: {
+            trigger: document.body,
+            start: "top top",
+            end: () => "+=" + Math.round(window.innerHeight * 3.5), // longer = slower shrink
+            scrub: 1.1,
+            invalidateOnRefresh: true
+          }
+        })
+        .to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
       };
 
       setup();
@@ -311,7 +281,7 @@ export default {
 @media (max-width: 480px) {
   .hero-logo-proxy {
     left: 12px;
-    top: 15px; /* Same as header logo position */
+    top: 100px; /* Position below header */
     font-size: 24vw; /* Even larger on smallest screens */
     line-height: 0.8;
   }
