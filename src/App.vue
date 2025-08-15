@@ -355,11 +355,8 @@ export default {
   text-align: center;
 }
 
-/* Add this to your App.vue styles for crisp logo rendering */
+
 .header-logo {
-  /* ... your existing styles ... */
-  
-  /* ADD THESE LINES for crisp rendering: */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
