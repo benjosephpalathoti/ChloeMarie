@@ -146,13 +146,13 @@ export default {
   .featured-images-art {
     display: flex !important;
     flex-direction: column !important;
-    gap: 40px !important; /* Good spacing between images */
+    gap: 90px !important; /* Good spacing between images */
     padding: 40px 0 !important;
     margin-top: 0 !important;
   }
   
   .featured-image {
-    width: 100vw !important;
+    width: 80vw !important;
     height: auto !important;
     grid-column: unset !important;
     grid-row: unset !important;
