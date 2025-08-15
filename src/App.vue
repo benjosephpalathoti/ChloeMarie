@@ -358,6 +358,7 @@ export default {
 
 /* Add this to your App.vue .header-logo styles */
 /* Replace your .header-logo styles in App.vue with this: */
+/* Replace your .header-logo styles in App.vue with this: */
 .header-logo{
   position: fixed;
   left: 12px;
@@ -374,19 +375,24 @@ export default {
   opacity: 1;
   pointer-events: auto;
   
-  /* CRITICAL: Anti-aliasing for crisp text */
+  /* Enhanced crisp rendering */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   backface-visibility: hidden;
   
-  /* Force pixel-perfect rendering */
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  
-  /* Prevent blurry transforms */
+  /* Smooth transform performance */
   transform: translateZ(0);
-  will-change: transform, font-size; /* Include font-size in will-change */
+  will-change: transform;
+  
+  /* Force browser to use subpixel rendering for smooth scaling */
+  -webkit-transform: translateZ(0);
+  -webkit-perspective: 1000;
+  -webkit-backface-visibility: hidden;
+  
+  /* Ensure smooth font rendering during scale */
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
 }
 
 /* Responsive Media Queries */

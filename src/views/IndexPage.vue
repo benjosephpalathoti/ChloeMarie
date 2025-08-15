@@ -143,42 +143,45 @@ export default {
           // Safety check for valid measurements
           if (hBox.width === 0 || pBox.width === 0) return;
 
-          // Use font-size instead of scale for crisp text
           const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
           const pSize = parseFloat(getComputedStyle(proxy).fontSize);
+          const scaleStart = pSize / hSize;
           
           const dx = pBox.left - hBox.left;
           const dy = pBox.top  - hBox.top;
 
-          // Start the header logo visually over the proxy using font-size
+          // Use a mix of techniques for smooth AND crisp animation
           gsap.set(headerLogo, { 
             x: dx, 
             y: dy, 
-            fontSize: pSize + "px", // Use actual font-size instead of scale
+            scale: scaleStart,
             transformOrigin: "0 0",
             force3D: true,
+            // Better rendering settings
+            filter: "blur(0px)", // Force sharp rendering
             backfaceVisibility: "hidden"
           });
 
           // Kill previous timeline if any
           if (this._logoTL) this._logoTL.kill();
 
-          // Animate to final font-size instead of scale
+          // Smooth scale animation with better easing
           this._logoTL = gsap.timeline({
             scrollTrigger: {
               trigger: document.body,
               start: "top top",
               end: () => "+=" + Math.round(window.innerHeight * 3.5),
-              scrub: 1.1,
+              scrub: 0.8, // Slightly less scrub for smoother animation
               invalidateOnRefresh: true
             }
           })
           .to(headerLogo, { 
             x: 0, 
             y: 0, 
-            fontSize: hSize + "px", // Animate to original font-size
-            ease: "none",
+            scale: 1,
+            ease: "power2.out", // Smoother easing
             force3D: true,
+            filter: "blur(0px)", // Maintain sharpness
             backfaceVisibility: "hidden"
           }, 0);
         };
