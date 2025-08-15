@@ -360,39 +360,12 @@ export default {
 /* Replace your .header-logo styles in App.vue with this: */
 /* Replace your .header-logo styles in App.vue with this: */
 .header-logo{
-  position: fixed;
-  left: 12px;
-  top: 26px;
-  z-index: 1001;
-  font-family: 'Oswald', Arial, sans-serif;
-  font-weight: 900;
-  text-transform: uppercase;
-  line-height: .86;
-  letter-spacing: -0.02em;
-  font-size: 40px;
-  color: #000;
-  text-decoration: none;
-  opacity: 1;
-  pointer-events: auto;
+  /* ... your existing styles ... */
   
-  /* Enhanced crisp rendering */
+  /* ONLY add these 3 lines for crispness: */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  backface-visibility: hidden;
-  
-  /* Smooth transform performance */
-  transform: translateZ(0);
-  will-change: transform;
-  
-  /* Force browser to use subpixel rendering for smooth scaling */
-  -webkit-transform: translateZ(0);
-  -webkit-perspective: 1000;
-  -webkit-backface-visibility: hidden;
-  
-  /* Ensure smooth font rendering during scale */
-  font-feature-settings: "kern" 1;
-  font-kerning: normal;
 }
 
 /* Responsive Media Queries */

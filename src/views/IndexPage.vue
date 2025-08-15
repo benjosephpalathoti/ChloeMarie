@@ -131,64 +131,42 @@ export default {
     },
     // Animate the fixed .header-logo from the proxy's start rect -> its final rect
     initLogoDock() {
-      setTimeout(() => {
-        const headerLogo = document.querySelector(".header-logo");
-        const proxy = document.querySelector(".hero-logo-proxy");
-        if (!headerLogo || !proxy) return;
+      const headerLogo = document.querySelector(".header-logo");
+      const proxy = document.querySelector(".hero-logo-proxy");
+      if (!headerLogo || !proxy) return;
 
-        const setup = () => {
-          const hBox = headerLogo.getBoundingClientRect();
-          const pBox = proxy.getBoundingClientRect();
+      const setup = () => {
+        const hBox = headerLogo.getBoundingClientRect();
+        const pBox = proxy.getBoundingClientRect();
 
-          // Safety check for valid measurements
-          if (hBox.width === 0 || pBox.width === 0) return;
+        const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
+        const pSize = parseFloat(getComputedStyle(proxy).fontSize);
+        const scaleStart = pSize / hSize;
 
-          const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
-          const pSize = parseFloat(getComputedStyle(proxy).fontSize);
-          const scaleStart = pSize / hSize;
-          
-          const dx = pBox.left - hBox.left;
-          const dy = pBox.top  - hBox.top;
+        const dx = pBox.left - hBox.left;
+        const dy = pBox.top  - hBox.top;
 
-          // Use a mix of techniques for smooth AND crisp animation
-          gsap.set(headerLogo, { 
-            x: dx, 
-            y: dy, 
-            scale: scaleStart,
-            transformOrigin: "0 0",
-            force3D: true,
-            // Better rendering settings
-            filter: "blur(0px)", // Force sharp rendering
-            backfaceVisibility: "hidden"
-          });
+        // Start the header logo visually over the proxy
+        gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0" });
 
-          // Kill previous timeline if any
-          if (this._logoTL) this._logoTL.kill();
+        // Kill previous timeline if any
+        if (this._logoTL) this._logoTL.kill();
 
-          // Smooth scale animation with better easing
-          this._logoTL = gsap.timeline({
-            scrollTrigger: {
-              trigger: document.body,
-              start: "top top",
-              end: () => "+=" + Math.round(window.innerHeight * 3.5),
-              scrub: 0.8, // Slightly less scrub for smoother animation
-              invalidateOnRefresh: true
-            }
-          })
-          .to(headerLogo, { 
-            x: 0, 
-            y: 0, 
-            scale: 1,
-            ease: "power2.out", // Smoother easing
-            force3D: true,
-            filter: "blur(0px)", // Maintain sharpness
-            backfaceVisibility: "hidden"
-          }, 0);
-        };
+        // Scrub to neutral (x:0,y:0, scale:1) - ORIGINAL ANIMATION
+        this._logoTL = gsap.timeline({
+          scrollTrigger: {
+            trigger: document.body,
+            start: "top top",
+            end: () => "+=" + Math.round(window.innerHeight * 3.5), // longer = slower shrink
+            scrub: 1.1,
+            invalidateOnRefresh: true
+          }
+        })
+        .to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
+      };
 
-        setup();
-        this._recomputeLogo = setup;
-      }, 150);
+      setup();
+      this._recomputeLogo = setup;
     },
     refreshLogoDock() {
       if (this._recomputeLogo) this._recomputeLogo();
