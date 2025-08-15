@@ -247,8 +247,8 @@ export default {
   .hero-logo-proxy {
     left: 16px;
     top: 16px; /* Start at same position as header logo for smooth animation */
-    font-size: 22vw; /* Large initial size - will scale down with GSAP */
-    line-height: 1.82;
+    font-size: 25vw; /* Large initial size - will scale down with GSAP */
+    line-height: 3.82;
     font-weight: 900;
     letter-spacing: -0.04em;
   }
@@ -264,8 +264,8 @@ export default {
   .index .hero {
     position: relative;
     margin-top: 35vh; /* Space for the large logo text */
-    width: 80vw;
-    max-width: 80vw;
+    width: 100vw;
+    max-width: 100vw;
     height: 70vh;
     object-fit: cover;
     object-position: center;
@@ -279,7 +279,7 @@ export default {
   }
   
   .featured-section {
-    padding: 2rem 16px;
+    padding: 5rem 16px;
   }
   
   /* Container adjustments */
