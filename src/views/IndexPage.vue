@@ -21,7 +21,7 @@
       </div>
 
       <!-- Featured Images -->
-      <section class="featured-section" data-reveal="wipe">
+      <section class="featured-section">
         <FeaturedImages :images="featuredImages" />
       </section>
 
