@@ -199,7 +199,7 @@ function styleFor(i) {
   right: 0;
   text-align: center;
   bottom: -36px;
-  color: #cfd1d6;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 600;
   letter-spacing: .02em;
