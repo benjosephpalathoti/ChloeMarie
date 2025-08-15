@@ -379,9 +379,9 @@ export default {
     height: 60px;
   }
   
-  /* Adjust header logo for mobile - final small size after scroll */
+  /* Adjust header logo for mobile - render at LARGE size initially */
   .header-logo {
-    font-size: 24px; /* Final size after animation */
+    font-size: 22vw; /* Start at large size - will scale DOWN */
     left: 16px;
     top: 16px;
     line-height: 0.82;
@@ -428,7 +428,7 @@ export default {
 
 @media (max-width: 480px) {
   .header-logo {
-    font-size: 22px; /* Final size after animation */
+    font-size: 24vw; /* Larger on small screens */
     left: 12px;
     top: 15px;
   }

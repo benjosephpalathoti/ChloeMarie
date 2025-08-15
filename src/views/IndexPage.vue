@@ -138,22 +138,41 @@ export default {
       const setup = () => {
         const isMobile = window.innerWidth <= 768;
         
-        // Get sizes for scale calculation
-        const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
-        const pSize = parseFloat(getComputedStyle(proxy).fontSize);
-        const scaleStart = pSize / hSize;
-
         if (isMobile) {
-          // Mobile: Only scale, no translation needed since both are at same position
+          // Mobile: Scale DOWN from large to small (inverse of before)
+          const targetSize = 24; // Final size in px
+          const currentSize = parseFloat(getComputedStyle(headerLogo).fontSize);
+          const scaleEnd = targetSize / currentSize; // Scale DOWN to this
+          
+          // Start at scale 1 (already large from CSS)
           gsap.set(headerLogo, { 
-            scale: scaleStart, 
+            scale: 1, 
             transformOrigin: "0 0",
             force3D: true
           });
+          
+          // Kill previous timeline if any
+          if (this._logoTL) this._logoTL.kill();
+          
+          // Animate scaling DOWN
+          this._logoTL = gsap.timeline({
+            scrollTrigger: {
+              trigger: document.body,
+              start: "top top",
+              end: () => "+=" + Math.round(window.innerHeight * 2),
+              scrub: 0.5,
+              invalidateOnRefresh: true
+            }
+          })
+          .to(headerLogo, { scale: scaleEnd, ease: "none" }, 0);
+          
         } else {
-          // Desktop: Get positions for translation
+          // Desktop: original animation with position and scale
           const hBox = headerLogo.getBoundingClientRect();
           const pBox = proxy.getBoundingClientRect();
+          const hSize = parseFloat(getComputedStyle(headerLogo).fontSize);
+          const pSize = parseFloat(getComputedStyle(proxy).fontSize);
+          const scaleStart = pSize / hSize;
           const dx = pBox.left - hBox.left;
           const dy = pBox.top - hBox.top;
           
@@ -163,27 +182,19 @@ export default {
             scale: scaleStart, 
             transformOrigin: "0 0" 
           });
-        }
-
-        // Kill previous timeline if any
-        if (this._logoTL) this._logoTL.kill();
-
-        // Create the animation timeline (same for both)
-        this._logoTL = gsap.timeline({
-          scrollTrigger: {
-            trigger: document.body,
-            start: "top top",
-            end: () => "+=" + Math.round(window.innerHeight * (isMobile ? 2 : 3.5)),
-            scrub: isMobile ? 0.5 : 1.1,
-            invalidateOnRefresh: true
-          }
-        });
-
-        // Animate based on device
-        if (isMobile) {
-          this._logoTL.to(headerLogo, { scale: 1, ease: "none" }, 0);
-        } else {
-          this._logoTL.to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
+          
+          if (this._logoTL) this._logoTL.kill();
+          
+          this._logoTL = gsap.timeline({
+            scrollTrigger: {
+              trigger: document.body,
+              start: "top top",
+              end: () => "+=" + Math.round(window.innerHeight * 3.5),
+              scrub: 1.1,
+              invalidateOnRefresh: true
+            }
+          })
+          .to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
         }
       };
 
