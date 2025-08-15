@@ -139,65 +139,115 @@ export default {
   .img-7 { grid-column: 3 / 5; grid-row: 3; width: 100%; height: 100%; }
 }
 
-/* ─── Large Mobile (481px - 768px) ───────────────────────────── */
-@media (max-width: 768px) and (min-width: 481px) {
+/* ===== MOBILE CHANGES START HERE ===== */
+
+/* ─── Mobile Layout (up to 768px) - Match Target Design ─────── */
+@media (max-width: 768px) {
   .featured-images-art {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: none;
-    gap: 20px 16px;
-    padding: 40px 16px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 40px !important; /* Good spacing between images */
+    padding: 40px 0 !important;
+    margin-top: 0 !important;
   }
   
-  /* Reset all positioning for 2-column mobile grid */
   .featured-image {
-    grid-column: auto;
-    grid-row: auto;
-    width: 100%;
-    height: clamp(280px, 60vw, 380px);
-    max-width: none;
-    min-width: none;
-    max-height: none;
+    width: 100vw !important;
+    height: auto !important;
+    grid-column: unset !important;
+    grid-row: unset !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative;
+    transform: none !important;
+  }
+  
+  /* Remove hover effects on mobile */
+  .featured-image:hover,
+  .featured-image:active {
+    transform: none !important;
   }
   
   .featured-image img {
-    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover !important; /* Cover to fill the viewport */
+    object-position: center;
+    border-radius: 0 !important;
   }
   
-  /* Hover effects for touch devices */
-  .featured-image:active {
-    transform: scale(0.98);
+  /* Varied heights for visual rhythm - alternating big/small pattern */
+  .featured-image:nth-child(1) {
+    height: 85vh !important; /* Big */
+  }
+  
+  .featured-image:nth-child(2) {
+    height: 65vh !important; /* Smaller */
+  }
+  
+  .featured-image:nth-child(3) {
+    height: 75vh !important; /* Medium-big */
+  }
+  
+  .featured-image:nth-child(4) {
+    height: 60vh !important; /* Small */
+  }
+  
+  .featured-image:nth-child(5) {
+    height: 80vh !important; /* Big */
+  }
+  
+  .featured-image:nth-child(6) {
+    height: 70vh !important; /* Medium */
+  }
+  
+  .featured-image:nth-child(7) {
+    height: 90vh !important; /* Biggest - grand finale */
   }
 }
 
-/* ─── Small Mobile (up to 480px) ─────────────────────────────── */
+/* ─── Small Mobile (up to 480px) - Adjusted heights for smaller screens ─── */
 @media (max-width: 480px) {
   .featured-images-art {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-    padding: 30px 12px;
+    gap: 30px !important; /* Slightly less gap on small screens */
+    padding: 30px 0 !important;
   }
   
-  .featured-image {
-    width: 100% !important;
-    height: clamp(300px, 70vw, 400px) !important;
-    grid-column: 1 !important; /* Force single column */
-    grid-row: auto !important; /* Auto row placement */
+  /* Slightly reduced heights for small screens but maintain rhythm */
+  .featured-image:nth-child(1) {
+    height: 75vh !important; /* Big */
   }
   
-  .featured-image img {
-    border-radius: 4px;
+  .featured-image:nth-child(2) {
+    height: 55vh !important; /* Smaller */
+  }
+  
+  .featured-image:nth-child(3) {
+    height: 65vh !important; /* Medium-big */
+  }
+  
+  .featured-image:nth-child(4) {
+    height: 50vh !important; /* Small */
+  }
+  
+  .featured-image:nth-child(5) {
+    height: 70vh !important; /* Big */
+  }
+  
+  .featured-image:nth-child(6) {
+    height: 60vh !important; /* Medium */
+  }
+  
+  .featured-image:nth-child(7) {
+    height: 80vh !important; /* Biggest */
   }
 }
 
-/* ─── Performance Optimizations ─────────────────────────────── */
+/* ─── Performance Optimizations for Mobile ─────────────────── */
 @media (max-width: 768px) {
   .featured-image {
-    will-change: transform;
+    will-change: auto;
     transform: translateZ(0);
-  }
-  
-  /* Touch-friendly interactions */
-  .featured-image {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
@@ -206,11 +256,6 @@ export default {
   @media (prefers-reduced-motion: reduce) {
     .featured-image {
       transition: none;
-    }
-    
-    .featured-image:hover,
-    .featured-image:active {
-      transform: none;
     }
   }
 }
@@ -223,30 +268,6 @@ export default {
 .featured-image:focus-visible {
   outline: 2px solid #0066cc;
   outline-offset: 4px;
-}
-
-/* ─── Original Mobile Breakpoint Enhanced ───────────────────── */
-@media (max-width: 900px) {   
-  .featured-images-art {     
-    grid-template-columns: 1fr !important;     
-    grid-template-rows: none !important;     
-    gap: 24px !important;     
-    padding: 24px 16px;   
-  }   
-  
-  .featured-image {     
-    width: 100% !important;     
-    height: clamp(240px, 55vw, 400px) !important;     
-    max-width: 500px;     
-    min-width: auto;     
-    max-height: none;
-    grid-column: 1 !important; /* Force single column */
-    grid-row: auto !important; /* Auto row placement */
-  }   
-  
-  .featured-image img {     
-    border-radius: 8px;   
-  } 
 }
 
 /* ─── Ultra-wide Screens ─────────────────────────────────────── */
