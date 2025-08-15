@@ -5,10 +5,10 @@
       <div class="track" ref="trackEl">
         <!-- LEFT: big title -->
         <div class="panel intro" ref="introEl">
-          <h1 class="allworks" data-reveal="wipe">ALL<br />WORKS</h1>
+          <h1 class="allworks">ALL<br />WORKS</h1>
         </div>
 
-        <!-- For each section: 1) LANE (two vertical lines + vertical pill)  2) your existing image group -->
+        <!-- For each section: LANE (two vertical lines + vertical pill) then the section GROUP -->
         <template v-for="(sec,i) in sections" :key="sec.key">
           <!-- lane -->
           <div class="panel pre-rails">
@@ -18,7 +18,7 @@
             </span>
           </div>
 
-          <!-- image group (unchanged behavior) -->
+          <!-- your original group -->
           <div class="panel group" :style="{ '--cards': sec.images.length }">
             <div class="cards">
               <article class="card" v-for="(img,j) in sec.images" :key="j">
@@ -41,7 +41,7 @@
       </div>
     </section>
 
-    <!-- MOBILE / SMALL TABLET -->
+    <!-- MOBILE -->
     <section class="mobile-only mobile-work-layout">
       <div class="mobile-work-header">
         <h1 class="mobile-allworks">ALL<br />WORKS</h1>
@@ -49,7 +49,7 @@
 
       <div class="mobile-categories">
         <div class="mo-lane" v-for="(sec,i) in sections" :key="sec.key">
-          <!-- horizontal pill sitting inside a vertical lane -->
+          <!-- horizontal pill inside vertical lane -->
           <button class="mo-pill" @click="openIndex = openIndex === i ? -1 : i">
             <span class="mo-label">{{ sec.title }}</span>
             <span class="mo-dot"></span>
@@ -59,7 +59,6 @@
             </svg>
           </button>
 
-          <!-- horizontally swipeable ribbon, page scroll remains vertical -->
           <div v-if="openIndex===i" class="mo-frame">
             <div class="mo-scroll">
               <img
@@ -96,43 +95,24 @@ function goSeries(sectionKey, index){
 }
 
 const sections = ref([
-  {
-    key: 'CERAMICS', title: 'CERAMICS',
-    images: [
-      { src: '/assets/works/ceramics/01.png' },
-      { src: '/assets/works/ceramics/02.png' },
-      { src: '/assets/works/ceramics/03.png' },
-      { src: '/assets/works/ceramics/04.png' },
-      { src: '/assets/works/ceramics/05.png' },
-      { src: '/assets/works/ceramics/06.jpeg' },
-      { src: '/assets/works/ceramics/07.jpg' },
-      { src: '/assets/works/ceramics/08.jpg' },
-    ],
-  },
-  {
-    key: 'DRAWING', title: 'DRAWINGS',
-    images: [
-      { src: '/assets/works/drawing/01.png' },
-      { src: '/assets/works/drawing/02.png' },
-      { src: '/assets/works/drawing/03.png' },
-      { src: '/assets/works/drawing/04.png' },
-      { src: '/assets/works/drawing/05.png' },
-      { src: '/assets/works/drawing/06.png' },
-      { src: '/assets/works/drawing/07.png' },
-      { src: '/assets/works/drawing/08.png' },
-      { src: '/assets/works/drawing/09.jpg' },
-    ],
-  },
-  {
-    key: 'DESIGNS', title: 'DESIGNS',
-    images: [
-      { src: '/assets/works/designs/01.png' },
-      { src: '/assets/works/designs/02.png' },
-      { src: '/assets/works/designs/03.jpg' },
-      { src: '/assets/works/designs/04.jpg' },
-      { src: '/assets/works/designs/05.jpg' },
-    ],
-  },
+  { key:'CERAMICS', title:'CERAMICS', images:[
+    { src:'/assets/works/ceramics/01.png' }, { src:'/assets/works/ceramics/02.png' },
+    { src:'/assets/works/ceramics/03.png' }, { src:'/assets/works/ceramics/04.png' },
+    { src:'/assets/works/ceramics/05.png' }, { src:'/assets/works/ceramics/06.jpeg' },
+    { src:'/assets/works/ceramics/07.jpg' }, { src:'/assets/works/ceramics/08.jpg' },
+  ]},
+  { key:'DRAWING', title:'DRAWINGS', images:[
+    { src:'/assets/works/drawing/01.png' }, { src:'/assets/works/drawing/02.png' },
+    { src:'/assets/works/drawing/03.png' }, { src:'/assets/works/drawing/04.png' },
+    { src:'/assets/works/drawing/05.png' }, { src:'/assets/works/drawing/06.png' },
+    { src:'/assets/works/drawing/07.png' }, { src:'/assets/works/drawing/08.png' },
+    { src:'/assets/works/drawing/09.jpg' },
+  ]},
+  { key:'DESIGNS', title:'DESIGNS', images:[
+    { src:'/assets/works/designs/01.png' }, { src:'/assets/works/designs/02.png' },
+    { src:'/assets/works/designs/03.jpg' }, { src:'/assets/works/designs/04.jpg' },
+    { src:'/assets/works/designs/05.jpg' },
+  ]},
 ])
 
 /* === DESKTOP REFS & STATE === */
@@ -151,12 +131,12 @@ function compute() {
   const vp = pinEl.value, tr = trackEl.value
   if (!vp || !tr) return { endX: 0 }
 
-  // walk every child panel in order; mark the x where each .group begins
+  // mark where each .group begins (after its lane)
   sectionStarts = []
   let sum = 0
   const kids = Array.from(tr.children).filter(el => !el.classList.contains('tail'))
   kids.forEach(el => {
-    if (el.classList.contains('group')) sectionStarts.push(sum) // jump to real section, not the lane
+    if (el.classList.contains('group')) sectionStarts.push(sum)
     sum += el.getBoundingClientRect().width
   })
 
@@ -185,7 +165,7 @@ function setup() {
     invalidateOnRefresh: true,
   })
 
-  // keep your active section detection on each .group
+  // active section when its group is centered
   const groups = Array.from(tr.querySelectorAll('.group'))
   groups.forEach((el, i) => {
     ScrollTrigger.create({
@@ -247,20 +227,15 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .work-page{
-  /* shared sizing knobs */
-  --header-h: 80px;
+  /* shared knobs */
   --card-w: 588px;
   --card-h: 742px;
 
-  --allworks-size: clamp(160px, 23vw, 140px);
-  --title-size: clamp(56px, 6.4vw, 96px);
-
-  /* lane (desktop) */
-  --lane-w: clamp(260px, 20vw, 380px);
+  /* DESKTOP lane + pill */
+  --lane-w: clamp(260px, 20vw, 380px); /* lane width between the two vertical lines */
   --lane-line: 2px;
-  --lane-color: #111;
+  --lane-color: #000;
 
-  /* pill (desktop) */
   --pill-bw: 2px;
   --pill-r: 999px;
 
@@ -268,21 +243,19 @@ onBeforeUnmount(() => {
 }
 
 /* ─── Desktop Layout ─────────────────────────────────────────── */
-
 .container-1440{ width:100vw; margin:0; padding:0; box-sizing:border-box; }
 .pin{ position:relative; height:var(--card-h); overflow:hidden; }
-
 .track{
   position:absolute; top:0; left:0; height:var(--card-h);
-  display:inline-flex; gap:0; will-change:transform; transform:translateZ(0);
+  display:inline-flex; gap:0; will-change:transform;
 }
 .tail{ flex:0 0 24px; width:24px; }
 
 .panel{ position:relative; height:var(--card-h); }
 
-/* intro column (left) */
+/* left intro (push first lane to the right) */
 .intro{
-  min-width: calc(var(--card-w) + 550px);     /* push first rail to the right */
+  min-width: calc(var(--card-w) + 550px);
   display:flex; align-items:flex-end;
 }
 .allworks{
@@ -291,22 +264,14 @@ onBeforeUnmount(() => {
   line-height:.84; letter-spacing:-.02em; margin:0 0 8px 12px;
 }
 
-/* lane with two vertical lines and a vertical pill */
+/* lane: just left/right borders = two long lines */
 .pre-rails{
   min-width: var(--lane-w);
   height: var(--card-h);
+  border-left: var(--lane-line) solid var(--lane-color);
+  border-right: var(--lane-line) solid var(--lane-color);
   position: relative;
-  pointer-events: none;
 }
-.pre-rails::before,
-.pre-rails::after{
-  content:"";
-  position:absolute; top:0; bottom:0;
-  width: var(--lane-line);
-  background: var(--lane-color);
-}
-.pre-rails::before{ left:0; }
-.pre-rails::after{ right:0; }
 
 /* attached vertical pill */
 .pre-pill{
@@ -317,53 +282,43 @@ onBeforeUnmount(() => {
   padding: 12px 10px 16px;
   writing-mode: vertical-rl; transform: rotate(180deg);
   text-transform: uppercase; letter-spacing:.08em; font-size:12px; line-height:1;
-  pointer-events: auto; z-index: 2;
+  z-index: 2;
 }
 .pre-pill .pill-label{ font-weight: 800; }
 .pre-pill .pill-num{ opacity:.6; font-weight:600; }
 
-/* groups: your original filmstrip */
+/* your original filmstrip */
 .group{ min-width: calc(var(--card-w) * var(--cards)); }
 .cards{ height:100%; display:flex; gap:0; }
 .card{ position:relative; flex:0 0 var(--card-w); width:var(--card-w); height:var(--card-h); overflow:hidden; }
 .card + .card{ margin-left:-1px; } /* hide seam */
-.card img{ width:100%; height:100%; object-fit: cover; object-position:center; display:block; transform:translateZ(0); }
+.card img{ width:100%; height:100%; object-fit: cover; object-position:center; display:block; }
 
 .card-title{
   position:absolute; left:24px; bottom:22px;
   font-family:'Oswald', Arial, sans-serif; font-weight:900; text-transform:uppercase;
-  letter-spacing:.02em; font-size: var(--title-size); line-height:.95;
+  letter-spacing:.02em; font-size: clamp(56px, 6.4vw, 96px); line-height:.95;
   color:#fff; text-shadow:0 6px 24px rgba(0,0,0,.35);
 }
 
 /* ─── Mobile Layout ─────────────────────────────────────────── */
-
-.mobile-work-layout {
-  padding-top: 96px; padding-bottom: 48px; min-height: 100vh;
-}
-
+.mobile-work-layout { padding-top: 96px; padding-bottom: 48px; min-height: 100vh; }
 .mobile-work-header { padding: 0 16px 32px; }
 .mobile-allworks{
   font-family: 'Oswald', Arial, sans-serif; font-weight: 900;
   font-size: 18vw; line-height: .84; letter-spacing: -0.02em; margin: 0;
 }
 
-/* vertical lane with two lines; horizontal pill inside */
+/* vertical lanes; page scroll is vertical */
 .mobile-categories{ padding: 0 12px; display:grid; gap: 24px; }
 .mo-lane{
-  position: relative; padding: 56px 0 12px; /* top room for pill */
-  min-height: 64px;
+  position: relative;
+  padding: 56px 0 12px;     /* space above for pill */
+  border-left: 2px solid #000;
+  border-right: 2px solid #000;
 }
-.mo-lane::before,
-.mo-lane::after{
-  content:"";
-  position:absolute; top:0; bottom:0;
-  width: 2px; background: #111;
-}
-.mo-lane::before{ left: 6px; }
-.mo-lane::after{ right: 6px; }
 
-/* horizontal pill button */
+/* horizontal pill at the top of the lane */
 .mo-pill{
   position:absolute; top: 8px; left: 50%;
   transform: translateX(-50%);
@@ -378,10 +333,10 @@ onBeforeUnmount(() => {
 .mo-chev{ width:18px; height:18px; transition: transform .2s ease; }
 .mo-chev.open{ transform: rotate(180deg); }
 
-/* frame + horizontal ribbon */
+/* frame + horizontal ribbon inside lane when open */
 .mo-frame{
   border:2px solid #000; border-radius: 18px;
-  overflow:hidden; background:#fff;
+  overflow:hidden; background:#fff; margin-top: 12px;
 }
 .mo-scroll{
   display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling: touch;
@@ -391,11 +346,9 @@ onBeforeUnmount(() => {
   display:block; object-fit: cover; scroll-snap-align: start;
 }
 
-/* ─── Display toggles ───────────────────────────────────────── */
-
+/* toggles */
 .desktop-only{ display:block; }
 .mobile-only{ display:none; }
-
 @media (max-width: 768px){
   .desktop-only{ display:none; }
   .mobile-only{ display:block; }
