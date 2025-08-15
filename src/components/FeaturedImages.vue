@@ -171,16 +171,16 @@ export default {
   .featured-image img {
     width: 100%;
     height: 100%;
-    object-fit: fill !important;
+    object-fit: cover !important;
     object-position: center;
     border-radius: 0 !important;
   }
   
   /* Individual image sizing and spacing - matching screenshots */
   .featured-image:nth-child(1) {
-    width: 55vw !important;  /* Slightly narrower than full width */
-    height: 55vh !important;  /* Medium height */
-    margin-bottom: 180px !important;  /* Space after */
+    width: 15vw !important;  /* Slightly narrower than full width */
+    height: 35vh !important;  /* Medium height */
+    margin-bottom: 380px !important;  /* Space after */
   }
   
   .featured-image:nth-child(2) {
