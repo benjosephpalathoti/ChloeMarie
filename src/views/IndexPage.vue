@@ -152,7 +152,15 @@ export default {
           const dy = pBox.top  - hBox.top;
 
           // Start the header logo visually over the proxy
-          gsap.set(headerLogo, { x: dx, y: dy, scale: scaleStart, transformOrigin: "0 0" });
+          gsap.set(headerLogo, { 
+            x: dx, 
+            y: dy, 
+            scale: scaleStart, 
+            transformOrigin: "0 0",
+            force3D: true,
+            backfaceVisibility: "hidden",
+            perspective: 1000
+          });
 
           // Kill previous timeline if any
           if (this._logoTL) this._logoTL.kill();
@@ -167,7 +175,14 @@ export default {
               invalidateOnRefresh: true
             }
           })
-          .to(headerLogo, { x: 0, y: 0, scale: 1, ease: "none" }, 0);
+          .to(headerLogo, { 
+            x: 0, 
+            y: 0, 
+            scale: 1, 
+            ease: "none",
+            force3D: true,
+            backfaceVisibility: "hidden"
+          }, 0);
         };
 
         setup();

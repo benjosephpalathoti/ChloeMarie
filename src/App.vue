@@ -355,6 +355,19 @@ export default {
   text-align: center;
 }
 
+/* Add this to your App.vue styles for crisp logo rendering */
+.header-logo {
+  /* ... your existing styles ... */
+  
+  /* ADD THESE LINES for crisp rendering: */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transform: translateZ(0); /* Force hardware acceleration */
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
 /* Responsive Media Queries */
 @media (max-width: 1200px){
   .header-infos{ width: 100vw; left: 0; transform: none; padding: 0 16px; }
